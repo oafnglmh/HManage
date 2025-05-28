@@ -2,12 +2,8 @@ package com.hmanage.hmanage_be.models;
 
 import java.security.Timestamp;
 
-import org.springframework.data.annotation.Id;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Task")
