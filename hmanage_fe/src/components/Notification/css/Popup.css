@@ -1,0 +1,84 @@
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.popup-container {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 300px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  text-align: center;
+  position: relative;
+  border-top: 6px solid;
+}
+
+.popup-success {
+  border-top-color: #4BB543;
+}
+
+.popup-error {
+  border-top-color: #FF4C4C;
+}
+
+.popup-title {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.popup-message {
+  margin-bottom: 20px;
+}
+
+.popup-button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+.popup-button-success {
+  background-color: #4BB543;
+}
+
+.popup-button-error {
+  background-color: #FF4C4C;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background-color: currentColor;
+  animation-name: progressAnimation;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-duration: 5s;
+  width: 100%;
+  border-radius: 0 0 8px 8px;
+}
+
+@keyframes progressAnimation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}
