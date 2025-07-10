@@ -8,26 +8,25 @@ import jakarta.persistence.*;
 @Table(name = "Activity")
 public class Activity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer activityId;
+    private Long  activityId;
 
-    private Integer userId;
+    private Long  userId;
     private String action;
     private Timestamp actionTime;
 
-    public Integer getActivityId() {
+    public Long  getActivityId() {
         return activityId;
     }
 
-    public void setActivityId(Integer activityId) {
+    public void setActivityId(Long  activityId) {
         this.activityId = activityId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 

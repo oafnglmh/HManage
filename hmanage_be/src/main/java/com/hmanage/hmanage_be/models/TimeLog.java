@@ -9,35 +9,34 @@ import jakarta.persistence.*;
 @Table(name = "Time_Log")
 public class TimeLog {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer timeLogId;
+    private Long  timeLogId;
 
-    private Integer userId;
-    private Integer taskId;
+    private Long  userId;
+    private Long  taskId;
     private BigDecimal hoursWorked;
     private Timestamp logDate;
 
-    public Integer getTimeLogId() {
+    public Long  getTimeLogId() {
         return timeLogId;
     }
 
-    public void setTimeLogId(Integer timeLogId) {
+    public void setTimeLogId(Long  timeLogId) {
         this.timeLogId = timeLogId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 
-    public Integer getTaskId() {
+    public Long  getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Integer taskId) {
+    public void setTaskId(Long  taskId) {
         this.taskId = taskId;
     }
 

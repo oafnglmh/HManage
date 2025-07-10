@@ -12,28 +12,27 @@ import jakarta.persistence.Table;
 @Table(name = "Document")
 public class Document {
     @Id
-    @GeneratedValue(strategy    = GenerationType.IDENTITY)
-    private     Integer         documentId          ;
+    private     Long          documentId          ;
     
-    private     Integer         projectId           ;
+    private     Long          projectId           ;
     private     String          fileName            ;
     private     String          fileType            ;
     private     String          filePath            ;
     private     Timestamp       uploadedAt          ;
 
-    public Integer getDocumentId()                  {
+    public Long  getDocumentId()                  {
         return documentId;
     }
 
-    public void setDocumentId(Integer documentId)   {
+    public void setDocumentId(Long  documentId)   {
         this.documentId = documentId;
     }
 
-    public Integer getProjectId()                   {
+    public Long  getProjectId()                   {
         return projectId;
     }
 
-    public void setProjectId(Integer projectId)     {
+    public void setProjectId(Long  projectId)     {
         this.projectId = projectId;
     }
 

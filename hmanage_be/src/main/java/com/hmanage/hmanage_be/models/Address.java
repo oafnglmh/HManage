@@ -6,28 +6,27 @@ import jakarta.persistence.*;
 @Table(name = "Address")
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer addressId;
+    private Long  addressId;
 
-    private Integer userId;
+    private Long  userId;
     private String street;
     private String city;
     private String state;
     private String zipCode;
 
-    public Integer getAddressId() {
+    public Long  getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(Integer addressId) {
+    public void setAddressId(Long  addressId) {
         this.addressId = addressId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 

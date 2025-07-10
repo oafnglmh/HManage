@@ -12,35 +12,34 @@ import jakarta.persistence.Table;
 @Table(name = "Team_Member")
 public class TeamMember {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer memberId;
+    private Long  memberId;
 
-    private Integer teamId;
-    private Integer userId;
+    private Long  teamId;
+    private Long  userId;
     private String role;
     private Timestamp joinedAt;
 
-    public Integer getMemberId() {
+    public Long  getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(Integer memberId) {
+    public void setMemberId(Long  memberId) {
         this.memberId = memberId;
     }
 
-    public Integer getTeamId() {
+    public Long  getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Integer teamId) {
+    public void setTeamId(Long  teamId) {
         this.teamId = teamId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 

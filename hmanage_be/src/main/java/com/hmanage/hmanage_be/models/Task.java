@@ -9,30 +9,29 @@ import jakarta.persistence.*;
 @Table(name = "Task")
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer taskId;
+    private Long  taskId;
 
-    private Integer projectId;
+    private Long  projectId;
     private String name;
     private String description;
-    private Integer assignedTo;
+    private Long  assignedTo;
     private String status;
     private Timestamp dueDate;
     private Timestamp createdAt;
 
-    public Integer getTaskId() {
+    public Long  getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Integer taskId) {
+    public void setTaskId(Long  taskId) {
         this.taskId = taskId;
     }
 
-    public Integer getProjectId() {
+    public Long  getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Integer projectId) {
+    public void setProjectId(Long  projectId) {
         this.projectId = projectId;
     }
 
@@ -52,11 +51,11 @@ public class Task {
         this.description = description;
     }
 
-    public Integer getAssignedTo() {
+    public Long  getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(Integer assignedTo) {
+    public void setAssignedTo(Long  assignedTo) {
         this.assignedTo = assignedTo;
     }
 

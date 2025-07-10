@@ -8,18 +8,17 @@ import jakarta.persistence.*;
 @Table(name = "Event")
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer eventId;
+    private Long  eventId;
 
     private String name;
     private String description;
     private Timestamp eventDate;
 
-    public Integer getEventId() {
+    public Long  getEventId() {
         return eventId;
     }
 
-    public void setEventId(Integer eventId) {
+    public void setEventId(Long  eventId) {
         this.eventId = eventId;
     }
 

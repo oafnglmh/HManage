@@ -8,19 +8,18 @@ import jakarta.persistence.*;
 @Table(name = "Item")
 public class Item {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer itemId;
+    private Long  itemId;
 
     private String name;
     private String description;
     private BigDecimal price;
-    private Integer stockQuantity;
+    private Long  stockQuantity;
 
-    public Integer getItemId() {
+    public Long  getItemId() {
         return itemId;
     }
 
-    public void setItemId(Integer itemId) {
+    public void setItemId(Long  itemId) {
         this.itemId = itemId;
     }
 
@@ -48,11 +47,11 @@ public class Item {
         this.price = price;
     }
 
-    public Integer getStockQuantity() {
+    public Long  getStockQuantity() {
         return stockQuantity;
     }
 
-    public void setStockQuantity(Integer stockQuantity) {
+    public void setStockQuantity(Long  stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
 }

@@ -9,27 +9,26 @@ import jakarta.persistence.*;
 @Table(name = "Payment")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer paymentId;
+    private Long  paymentId;
 
-    private Integer userId;
+    private Long  userId;
     private BigDecimal amount;
     private String paymentMethod;
     private Timestamp paidAt;
 
-    public Integer getPaymentId() {
+    public Long  getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(Integer paymentId) {
+    public void setPaymentId(Long  paymentId) {
         this.paymentId = paymentId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 

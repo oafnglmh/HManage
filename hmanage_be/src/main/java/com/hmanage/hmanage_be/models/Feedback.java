@@ -8,27 +8,26 @@ import jakarta.persistence.*;
 @Table(name = "Feedback")
 public class Feedback {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer feedbackId;
+    private Long  feedbackId;
 
-    private Integer userId;
+    private Long  userId;
     private String content;
-    private Integer rating;
+    private Long  rating;
     private Timestamp submittedAt;
 
-    public Integer getFeedbackId() {
+    public Long  getFeedbackId() {
         return feedbackId;
     }
 
-    public void setFeedbackId(Integer feedbackId) {
+    public void setFeedbackId(Long  feedbackId) {
         this.feedbackId = feedbackId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 
@@ -40,11 +39,11 @@ public class Feedback {
         this.content = content;
     }
 
-    public Integer getRating() {
+    public Long  getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Long  rating) {
         this.rating = rating;
     }
 

@@ -6,34 +6,33 @@ import jakarta.persistence.*;
 
 public class Registration {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer registrationId;
+    private Long  registrationId;
 
-    private Integer userId;
-    private Integer eventId;
+    private Long  userId;
+    private Long  eventId;
     private Timestamp registeredAt;
 
-    public Integer getRegistrationId() {
+    public Long  getRegistrationId() {
         return registrationId;
     }
 
-    public void setRegistrationId(Integer registrationId) {
+    public void setRegistrationId(Long  registrationId) {
         this.registrationId = registrationId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 
-    public Integer getEventId() {
+    public Long  getEventId() {
         return eventId;
     }
 
-    public void setEventId(Integer eventId) {
+    public void setEventId(Long  eventId) {
         this.eventId = eventId;
     }
 

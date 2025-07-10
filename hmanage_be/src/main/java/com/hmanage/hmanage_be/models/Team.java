@@ -12,17 +12,16 @@ import jakarta.persistence.Table;
 @Table(name = "Team")
 public class Team {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer teamId;
+    private Long  teamId;
 
     private String name;
     private Timestamp createdAt;
 
-    public Integer getTeamId() {
+    public Long  getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Integer teamId) {
+    public void setTeamId(Long  teamId) {
         this.teamId = teamId;
     }
 

@@ -8,35 +8,34 @@ import jakarta.persistence.*;
 @Table(name = "Message")
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer messageId;
+    private Long  messageId;
 
-    private Integer senderId;
-    private Integer receiverId;
+    private Long  senderId;
+    private Long  receiverId;
     private String content;
     private Timestamp sentAt;
 
-    public Integer getMessageId() {
+    public Long  getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(Integer messageId) {
+    public void setMessageId(Long  messageId) {
         this.messageId = messageId;
     }
 
-    public Integer getSenderId() {
+    public Long  getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Integer senderId) {
+    public void setSenderId(Long  senderId) {
         this.senderId = senderId;
     }
 
-    public Integer getReceiverId() {
+    public Long  getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Integer receiverId) {
+    public void setReceiverId(Long  receiverId) {
         this.receiverId = receiverId;
     }
 

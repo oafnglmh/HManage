@@ -12,27 +12,26 @@ import jakarta.persistence.Table;
 @Table(name = "Notification")
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer notificationId;
+    private Long  notificationId;
 
-    private Integer userId;
+    private Long  userId;
     private String message;
     private Boolean isRead;
     private Timestamp sentAt;
 
-    public Integer getNotificationId() {
+    public Long  getNotificationId() {
         return notificationId;
     }
 
-    public void setNotificationId(Integer notificationId) {
+    public void setNotificationId(Long  notificationId) {
         this.notificationId = notificationId;
     }
 
-    public Integer getUserId() {
+    public Long  getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long  userId) {
         this.userId = userId;
     }
 
