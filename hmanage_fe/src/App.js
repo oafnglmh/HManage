@@ -1,8 +1,14 @@
-import logo from './logo.svg';
-import AppComponent  from './components/App'
+// App.js
+import { Routes, Route } from "react-router-dom";
+import AppContent from "../src/components/Auth/js/AppContent";
+import HomePage from "./components/Home/components/home/js/HomePage";
+
 function App() {
   return (
-    <AppComponent  />
+    <Routes>
+      <Route path="/" element={<AppContent />} />
+      <Route path="/home" element={<HomePage />} />
+    </Routes>
   );
 }
 

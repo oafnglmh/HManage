@@ -19,11 +19,7 @@ export default class AppContent extends React.Component {
         this.setState((prevState) => ({ isLogin: !prevState.isLogin }));
     }
 
-    componentDidMount() {
-        request("GET", "/messages", {}).then((response) => {
-            this.setState({ data: response.data });
-        });
-    }
+
 
     render() {
         const { isLogin, onLogin, onRegister } = this.state;
