@@ -1,5 +1,6 @@
 package com.hmanage.hmanage_be.Service;
 
+import com.hmanage.hmanage_be.Constants.ModelConstants;
 import com.hmanage.hmanage_be.Exceptions.AppException;
 import com.hmanage.hmanage_be.dto.CredentialsDto;
 import com.hmanage.hmanage_be.dto.SignUpDto;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,14 +37,32 @@ public class UserService {
        }
        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
-    public UserDto register (SignUpDto userDto){
+    public UserDto register(SignUpDto userDto) {
         Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             throw new AppException("User already exists", HttpStatus.BAD_REQUEST);
         }
+
         User user = userMapper.signUpToUser(userDto);
         user.setPasswordHash(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestampStr = LocalDateTime.now().format(formatter);
+        String prefix = ModelConstants.USER.toString();
+        String userIdStr = prefix + timestampStr;
+        long userId = Long.parseLong(userIdStr);
+
+
+        user.setUserId(userId);
+
         User savedUser = userRepository.save(user);
         return userMapper.toUserDto(savedUser);
     }
+
 }

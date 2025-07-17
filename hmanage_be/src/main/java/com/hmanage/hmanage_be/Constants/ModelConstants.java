@@ -2,56 +2,56 @@ package com.hmanage.hmanage_be.Constants;
 
 public class ModelConstants {
     // User model constant
-    public static final Integer USER            = 100000;
+    public static final Integer USER            = 1000;
 
     // Project model constant
-    public static final Integer PROJECT         = 100001;
+    public static final Integer PROJECT         = 1001;
 
     // Task model constant
-    public static final Integer TASK            = 100002;
+    public static final Integer TASK            = 1002;
 
     // Team model constant
-    public static final Integer TEAM            = 100003;
+    public static final Integer TEAM            = 1003;
 
     // Team Member model constant
-    public static final Integer TEAM_MEMBER     = 100004;
+    public static final Integer TEAM_MEMBER     = 1004;
 
     // Document model constant
-    public static final Integer DOCUMENT        = 100005;
+    public static final Integer DOCUMENT        = 1005;
 
     // Notification model constant
-    public static final Integer NOTIFICATION    = 100006;
+    public static final Integer NOTIFICATION    = 1006;
 
     // Message model constant
-    public static final Integer MESSAGE         = 100007;
+    public static final Integer MESSAGE         = 1007;
 
     // Audit model constant
-    public static final Integer AUDIT           = 100008;
+    public static final Integer AUDIT           = 1008;
 
     // TimeLog model constant
-    public static final Integer TIME_LOG        = 100009;
+    public static final Integer TIME_LOG        = 1009;
 
     // Payment model constant
-    public static final Integer PAYMENT         = 100010;
+    public static final Integer PAYMENT         = 1010;
 
     // Feedback model constant
-    public static final Integer FEEDBACK        = 100011;
+    public static final Integer FEEDBACK        = 1011;
 
     // Event model constant
-    public static final Integer EVENT           = 100012;
+    public static final Integer EVENT           = 1012;
 
     // Address model constant
-    public static final Integer ADDRESS         = 100013;
+    public static final Integer ADDRESS         = 1013;
 
     // Registration model constant
-    public static final Integer REGISTRATION    = 100014;
+    public static final Integer REGISTRATION    = 1014;
 
     // Item model constant
-    public static final Integer ITEM            = 100015;
+    public static final Integer ITEM            = 1015;
 
     // Support Ticket model constant
-    public static final Integer SUPPORT_TICKET  = 100016;
+    public static final Integer SUPPORT_TICKET  = 1016;
 
     // Activity model constant
-    public static final Integer ACTIVITY        = 100017;
+    public static final Integer ACTIVITY        = 1017;
 }

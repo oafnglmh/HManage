@@ -29,6 +29,6 @@ public class AuthController {
         UserDto user = userService.register(signUpDto);
         user.setToken(userAuthProvider.createToken(user.getUsername()));
         return ResponseEntity.created(URI.create("/users/"+user.getId()))
-                .body(user);
+                    .body(user);
     }
 }
