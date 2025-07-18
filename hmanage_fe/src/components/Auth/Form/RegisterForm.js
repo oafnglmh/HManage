@@ -6,11 +6,11 @@ export default class RegisterForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        first_name: "",
-        last_name: "",
-        username: "",
-        password: "",
-        popup: null,
+            first_name: "",
+            last_name: "",
+            username: "",
+            password: "",
+            popup: null,
         };
     }
 

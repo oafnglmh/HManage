@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../../common/js/header";
 import Navbar from "../../common/js/navbar";
 import "../css/homePage.css";
+import { Outlet } from "react-router-dom";
 
 function HomePage() {
     return (
@@ -10,8 +11,7 @@ function HomePage() {
             <div className="content">
                 <Navbar />
                 <main className="main">
-                    <h2>Welcome to the Home Page</h2>
-                    <p>This is your main content.</p>
+                    <Outlet />
                 </main>
             </div>
         </div>

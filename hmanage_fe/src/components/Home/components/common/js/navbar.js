@@ -13,7 +13,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="nav-container">
                 <Link to="/home" className={getNavItemClass('/home')}>Home</Link>
-                <Link to="/about" className={getNavItemClass('/about')}>About</Link>
+                <Link to="/questions" className={getNavItemClass('/questions')}>Trắc nghiệm</Link>
                 <Link to="/contact" className={getNavItemClass('/contact')}>Contact</Link>
             </div>
         </nav>
