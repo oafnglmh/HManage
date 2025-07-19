@@ -28,7 +28,7 @@ public class AuthController {
     public ResponseEntity<UserDto> register(@RequestBody SignUpDto signUpDto){
         UserDto user = userService.register(signUpDto);
         user.setToken(userAuthProvider.createToken(user.getUsername()));
-        return ResponseEntity.created(URI.create("/users/"+user.getId()))
+        return ResponseEntity.created(URI.create("/users/"+user.getUserId()))
                     .body(user);
     }
 }
