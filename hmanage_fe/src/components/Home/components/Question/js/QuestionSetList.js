@@ -1,27 +1,26 @@
-import React, { useState } from "react";
+import React, { useState,useEffect  } from "react";
 import QuestionSetCard from "./QuestionSetCard";
 import "../css/QuestionSetList.css";
 import AddQuestionModal from "../js/AddQuestionModal";
-
-const dummyData = [
-    {
-        id: 1,
-        name: "Bộ câu hỏi Toán lớp 12",
-        detail: "Gồm 100 câu trắc nghiệm về tích phân, giới hạn.",
-        avatar: "https://i.pinimg.com/736x/4d/94/26/4d942615efb45071a3e8601a24cc1618.jpg"
-    },
-    {
-        id: 2,
-        name: "Bộ câu hỏi Lịch sử",
-        detail: "Tổng hợp các sự kiện từ 1945 đến nay.",
-        avatar: "https://i.pinimg.com/736x/4d/94/26/4d942615efb45071a3e8601a24cc1618.jpg"
-    }
-];
+import { QuestionService } from "../Services/questionService";
 
 function QuestionSetList() {
-    const [questionSets, setQuestionSets] = useState(dummyData);
-    const [showModal, setShowModal] = useState(false);
 
+    const [questionSets, setQuestionSets] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const data = await QuestionService.getAll();
+            setQuestionSets(data);
+            console.log("set",data)
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách:", error);
+        }
+    };
     const handleAdd = () => {
         setShowModal(true);
     };
@@ -44,9 +43,9 @@ function QuestionSetList() {
             </div>
 
             <div className="card-list">
-                {questionSets.map(set => (
+                {questionSets?.filter(q => q?.projectId).map(set => (
                     <QuestionSetCard
-                        key={set.id}
+                        key={set.projectId}
                         data={set}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
@@ -60,6 +59,7 @@ function QuestionSetList() {
                     onAdd={(newSet) => {
                         setQuestionSets([...questionSets, newSet]);
                         setShowModal(false);
+                        fetchData();
                     }}
                 />
             )}

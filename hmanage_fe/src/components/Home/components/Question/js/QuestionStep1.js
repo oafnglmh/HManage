@@ -96,11 +96,11 @@ export default function QuestionStep1({ questions, setQuestions }) {
             </div>
         </div>
         {popup && (
-        <Popup
-            type={popup.type}
-            message={popup.message}
-            onClose={closePopup}
-        />
+            <Popup
+                type={popup.type}
+                message={popup.message}
+                onClose={closePopup}
+            />
         )}
         </>
     );

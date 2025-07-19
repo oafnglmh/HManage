@@ -10,7 +10,7 @@ function QuestionSetCard({ data, onEdit, onDelete }) {
                 <img src={data.avatar} alt="avatar" className="avatar" />
                 <div>
                     <h3 className="title">{data.name}</h3>
-                    <p className="detail">{data.detail}</p>
+                    <p className="detail">{data.description}</p>
                 </div>
             </div>
 

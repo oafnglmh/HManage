@@ -15,14 +15,14 @@ export default function QuestionStep2({ info, setInfo }) {
             <textarea
                 className="qs2-textarea"
                 value={info.detail}
-                onChange={(e) => setInfo({ ...info, detail: e.target.value })}
+                onChange={(e) => setInfo({ ...info, description: e.target.value })}
             />
 
             <label className="qs2-label">Số phút làm bài</label>
             <input type="number" min={0}
                 className="qs2-input"
                 value={info.minute}
-                onChange={(e) => setInfo({ ...info, minute: e.target.value })}
+                onChange={(e) => setInfo({ ...info, minutes: e.target.value })}
             />
 
             <label className="qs2-label">Avatar (URL):</label>
