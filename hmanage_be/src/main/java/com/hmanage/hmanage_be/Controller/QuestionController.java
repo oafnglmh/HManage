@@ -5,10 +5,7 @@ import com.hmanage.hmanage_be.dto.QuestionDto;
 import com.hmanage.hmanage_be.models.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -31,4 +28,15 @@ public class QuestionController {
         return ResponseEntity.ok(questions);
     }
 
+    @GetMapping("/question/{id}")
+    public ResponseEntity<List<QuestionDto>> getById(@PathVariable Long id) {
+        List<QuestionDto> questions = questionService.getById(id);
+        return ResponseEntity.ok(questions);
+    }
+
+    @PostMapping("/question/update")
+    public ResponseEntity<QuestionDto> questionUpdate(@RequestBody QuestionDto qs){
+        QuestionDto qsDto = questionService.update(qs);
+        return ResponseEntity.ok(qsDto);
+    }
 }

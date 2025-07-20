@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -83,6 +84,42 @@ public class QuestionService {
             Document doc = (Document) row[1];
 
             QuestionDto dto = new QuestionDto();
+            System.out.println("Dòng lấy ra:");
+            System.out.println("ProjectId: " + prj.getProjectId());
+            System.out.println("DocumentId: " + (doc != null ? doc.getDocumentId() : "null"));
+            System.out.println("Code: " + prj.getCode());
+            dto.setName(prj.getName());
+            dto.setDescription(prj.getDescription());
+            dto.setMinutes(prj.getMinutes());
+            dto.setAvatar(doc != null ? doc.getFilePath() : null);
+            dto.setCode(prj.getCode());
+            dto.setProjectId(prj.getProjectId());
+            dto.setCreatedAt(prj.getCreatedAt());
+            dto.setUserId(prj.getUserId());
+            dto.setStatus(prj.getStatus());
+            try {
+                dto.setInf01((List<QuestionItemDto>) mapper.readValue(prj.getInf01(), Object.class));
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi khi parse inf01 từ JSON", e);
+            }
+
+            result.add(dto);
+        }
+        System.out.println("data lấy ra:" + result);
+        return result;
+    }
+
+    public List<QuestionDto> getById(Long id){
+        List<Object[]> data = questionRepository.findProjectWithDocumentsById(id);
+        List<QuestionDto> result = new ArrayList<>();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Object[] row : data) {
+            Project prj = (Project) row[0];
+            Document doc = (Document) row[1];
+
+            QuestionDto dto = new QuestionDto();
             dto.setName(prj.getName());
             dto.setDescription(prj.getDescription());
             dto.setMinutes(prj.getMinutes());
@@ -104,4 +141,33 @@ public class QuestionService {
         return result;
     }
 
+    public QuestionDto update(QuestionDto dto) {
+        Optional<Project> optionalProject = questionRepository.findById(dto.getProjectId());
+        if (!optionalProject.isPresent()) {
+            throw new RuntimeException("Không tìm thấy Project với ID: " + dto.getProjectId());
+        }
+
+        Project project = optionalProject.get();
+
+        project.setName(dto.getName());
+        project.setDescription(dto.getDescription());
+        project.setMinutes(dto.getMinutes());
+        project.setStatus(dto.getStatus());
+        project.setCode(dto.getCode());
+        project.setUserId(dto.getUserId());
+        project.setCreatedAt(dto.getCreatedAt());
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonInf01 = mapper.writeValueAsString(dto.getInf01());
+            project.setInf01(jsonInf01);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi convert inf01 thành JSON", e);
+        }
+
+        project = questionRepository.save(project);
+
+        dto.setProjectId(project.getProjectId());
+        return dto;
+    }
 }

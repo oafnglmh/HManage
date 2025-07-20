@@ -1,6 +1,7 @@
 package com.hmanage.hmanage_be.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class QuestionDto {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long  projectId;
 
     private Long      userId;
