@@ -1,0 +1,25 @@
+.confirm-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+    z-index: 9999;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.confirm-btn {
+    background-color: #d9534f;
+    color: white;
+    padding: 8px 16px;
+    margin-right: 10px;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+}

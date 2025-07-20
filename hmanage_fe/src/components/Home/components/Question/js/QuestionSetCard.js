@@ -3,7 +3,6 @@ import "../css/QuestionSetCard.css";
 
 function QuestionSetCard({ data, onEdit, onDelete }) {
     const [showMenu, setShowMenu] = useState(false);
-
     return (
         <div className="card-container">
             <div className="info-container">
@@ -23,11 +22,11 @@ function QuestionSetCard({ data, onEdit, onDelete }) {
                     <div className="menu-dropdown">
                         <button className="menu-item" onClick={() => {
                             setShowMenu(false);
-                            onEdit(data.id);
+                            onEdit(data.projectId);
                         }}>Sửa</button>
                         <button className="menu-item delete" onClick={() => {
                             setShowMenu(false);
-                            onDelete(data.id);
+                            onDelete(data.projectId);
                         }}>Xóa</button>
                     </div>
                 )}

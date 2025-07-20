@@ -5,7 +5,7 @@ export default function Popup({ type, message, onClose }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 5000); // tự đóng sau 5s
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [onClose]);

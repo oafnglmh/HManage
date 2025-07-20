@@ -10,4 +10,12 @@ export const QuestionService = {
         const response = await request("POST", "/question/add", questionPayload);
         return response.data;
     },
+    getById: async (id) => {
+        const response = await request("GET", `/question/${id}`,{});
+        return response.data;
+    },
+    update: async (payload)  => {
+        const response = await request("POST", "/question/update", payload);
+        return response.data;
+    }
 };

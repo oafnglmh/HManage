@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Popup from "../../Notification/js/Popup";
 import authService from "../Services/AuthService";
-
+import { useAuth } from "../../../context/AuthContext";
 export default function LoginForm() {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [popup, setPopup] = useState(null);
@@ -12,11 +12,12 @@ export default function LoginForm() {
         const { name, value } = event.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
+    const { isLoggedIn, login, register } = useAuth();
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            await authService.login(formData.username, formData.password);
+            const token = await authService.login(formData.username, formData.password);
+            login(token);
             setPopup({ type: "success", message: "Đăng nhập thành công!" });
             navigate("/home");
         } catch (error) {
