@@ -24,7 +24,7 @@ export default function AddQuestionModal({ onClose, onAdd, editingData }) {
             projectId: data.projectId || null,
             code:data.code || "",
             userId:data.userId ||"",
-            status:1||""
+            status: 1||""
         });
         }
     }, [editingData]);

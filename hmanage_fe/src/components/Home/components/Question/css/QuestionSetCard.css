@@ -77,3 +77,9 @@
 .menu-item.delete {
     color: red;
 }
+.menu-item.summary{
+    color: #b39c04;
+}
+.menu-item.start{
+    color: #03488c;
+}

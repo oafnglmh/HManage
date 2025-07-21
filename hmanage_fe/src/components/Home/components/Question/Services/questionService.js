@@ -17,5 +17,13 @@ export const QuestionService = {
     update: async (payload)  => {
         const response = await request("POST", "/question/update", payload);
         return response.data;
+    },
+    summary: async (id) => {
+        const response = await request("GET",`/question/summary/${id}`,{})
+        return response.data;
+    },
+    start: async(payload) => {
+        const response = await request("POST","/question/start",payload)
+        return response.data;
     }
 };

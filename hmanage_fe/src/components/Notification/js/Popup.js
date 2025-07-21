@@ -10,23 +10,26 @@ export default function Popup({ type, message, onClose }) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
+  const getTitle = () => {
+    switch (type) {
+      case "success":
+        return "Thành công!";
+      case "error":
+        return "Thất bại!";
+      case "info":
+        return "Thông báo!";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="popup-overlay">
-      <div
-        className={`popup-container ${
-          type === "success" ? "popup-success" : "popup-error"
-        }`}
-      >
-        <div className="popup-title">
-          {type === "success" ? "Thành công!" : "Thất bại!"}
-        </div>
+      <div className={`popup-container popup-${type}`}>
+        <div className="popup-title">{getTitle()}</div>
         <div className="popup-message">{message}</div>
         <button
-          className={`popup-button ${
-            type === "success"
-              ? "popup-button-success"
-              : "popup-button-error"
-          }`}
+          className={`popup-button popup-button-${type}`}
           onClick={onClose}
         >
           Đóng

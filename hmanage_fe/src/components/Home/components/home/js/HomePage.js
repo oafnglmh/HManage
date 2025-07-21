@@ -9,7 +9,7 @@ function HomePage() {
         <div className="layout">
             <Header />
             <div className="content">
-                <Navbar />
+                {/* <Navbar /> */}
                 <main className="main">
                     <Outlet />
                 </main>

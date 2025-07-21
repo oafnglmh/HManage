@@ -5,14 +5,20 @@ import AddQuestionModal from "../js/AddQuestionModal";
 import { QuestionService } from "../Services/questionService";
 import ConfirmModal from "../../../../Notification/js/ConfirmModal";
 import Popup from "../../../../Notification/js/Popup";
+import QuizScreen from "./QuizScreen";
+import SummaryModal from "./SummaryModal";
 function QuestionSetList() {
-
+    const [showSummary, setShowSummary] = useState(false);
     const [questionSets, setQuestionSets] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingSet, setEditingSet] = useState(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
     const [popup, setPopup] = useState(null);
     const closePopup = () => setPopup(null);
+    const [showQuiz, setShowQuiz] = useState(false);
+    const [slQuiz, setSelectedQuiz] = useState(null);
+    const [score, setScore] = useState(null);
+    const [summaryData, setSummaryData] = useState(null);
     useEffect(() => {
         fetchData();
     }, []);
@@ -21,6 +27,7 @@ function QuestionSetList() {
         try {
             const data = await QuestionService.getAll();
             setQuestionSets(data);
+            console.log("data",data)
         } catch (error) {
             console.error("Lỗi khi tải danh sách:", error);
         }
@@ -43,6 +50,18 @@ function QuestionSetList() {
     const handleDelete = (id) => {
         setConfirmDeleteId(id);
     };
+    const handleStart = (id) => {
+        const quiz = questionSets.find(q => q.projectId === id);
+        setSelectedQuiz(quiz);
+        setShowQuiz(true);
+    };
+
+    const handleSummary = async (id) =>{
+        const data =await QuestionService.summary(id);
+        setSummaryData(data);
+        setShowSummary(true);
+    }
+
     const confirmDelete = async () => {
         try {
             const data = await QuestionService.getById(confirmDeleteId);
@@ -79,6 +98,8 @@ function QuestionSetList() {
                         data={set}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onSummary={handleSummary}
+                        onStart={handleStart}
                     />
                 ))}
             </div>
@@ -100,6 +121,12 @@ function QuestionSetList() {
                     }}
                 />
             )}
+            <SummaryModal
+                isOpen={showSummary}
+                onClose={() => setShowSummary(false)}
+                results={summaryData}
+            />
+
             {confirmDeleteId && (
                 <ConfirmModal
                     message="Bạn có chắc muốn xóa bộ câu hỏi này?"
@@ -107,7 +134,20 @@ function QuestionSetList() {
                     onCancel={() => setConfirmDeleteId(null)}
                 />
             )}
-
+            {showQuiz && slQuiz && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <QuizScreen
+                            data={slQuiz}
+                            onSubmit={(correct, total) => {
+                                setScore(`${correct}/${total}`);
+                                setShowQuiz(false);
+                                setPopup({ type: "info", message: `Bạn đã đạt ${correct}/${total} điểm` });
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

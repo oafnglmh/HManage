@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../css/QuestionSetCard.css";
-
-function QuestionSetCard({ data, onEdit, onDelete }) {
+import QuizScreen from "./QuizScreen";
+function QuestionSetCard({ data, onEdit, onDelete ,onSummary,onStart}) {
     const [showMenu, setShowMenu] = useState(false);
     return (
         <div className="card-container">
@@ -28,6 +28,14 @@ function QuestionSetCard({ data, onEdit, onDelete }) {
                             setShowMenu(false);
                             onDelete(data.projectId);
                         }}>Xóa</button>
+                        <button className="menu-item summary" onClick={() => {
+                            setShowMenu(false);
+                            onSummary(data.projectId);
+                        }}>Tổng kết</button>
+                        <button className="menu-item start" onClick={() => {
+                            setShowMenu(false);
+                            onStart(data.projectId);
+                        }}>Bắt đầu</button>
                     </div>
                 )}
             </div>

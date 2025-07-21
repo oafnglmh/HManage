@@ -74,6 +74,17 @@
   border-radius: 0 0 8px 8px;
 }
 
+.popup-container.popup-info {
+  background-color: #e0f0ff;
+  border-left: 6px solid #2196f3;
+}
+
+.popup-button.popup-button-info {
+  background-color: #2196f3;
+  color: white;
+}
+
+
 @keyframes progressAnimation {
   from {
     width: 100%;
