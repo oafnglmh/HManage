@@ -16,16 +16,19 @@ import java.util.List;
 @NoArgsConstructor
 public class QuestionDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Long  projectId;
+    private Long projectId;
 
-    private Long      userId;
-    private String      code;
-    private Integer     minutes;
+    private Long userId;
+    private String code;
+    private Integer minutes;
     private List<QuestionItemDto> inf01;
-    private String      name;
-    private String      description;
-    private String      status;
-    private String      avatar;
-    private Timestamp   createdAt;
-    private Timestamp   updatedAt;
+    private String inf02;
+    private String name;
+    private String description;
+    private String status;
+    private String avatar;
+    private String parentId;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private String userName;
 }

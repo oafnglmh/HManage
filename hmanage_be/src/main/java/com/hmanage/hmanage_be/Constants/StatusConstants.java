@@ -24,4 +24,7 @@ public class StatusConstants {
 
     /** Trạng thái bị hủy (do người dùng hoặc hệ thống) */
     public static final Integer CANCELED = 6;
+
+    /** Trạng thái bài làm trắc nghiệm */
+    public static final Integer START = 10;
 }

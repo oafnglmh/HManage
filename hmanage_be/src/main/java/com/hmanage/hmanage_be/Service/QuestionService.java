@@ -32,6 +32,13 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final DocumentRepository documentRepository;
     public QuestionDto add(QuestionDto qs) {
+        String status = qs.getStatus();
+        if (status == null) {
+            status = String.valueOf(StatusConstants.ACTIVE);
+            qs.setStatus(status);
+
+        }
+
         LocalDateTime now = LocalDateTime.now();
         String timestampStr = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         Timestamp nowTimestamp = Timestamp.valueOf(now);
@@ -43,14 +50,30 @@ public class QuestionService {
         prj.setName(qs.getName());
         prj.setDescription(qs.getDescription());
         prj.setMinutes(qs.getMinutes());
-        prj.setCode("QUES-" + timestampStr);
+        String prefix;
+        switch (status) {
+            case "1":
+                prefix = "QUES";
+                break;
+            case "10":
+                prefix = "ANSW";
+                break;
+            default:
+                prefix = "UNKN";
+                break;
+        }
+
+        prj.setCode(prefix + "-" + timestampStr);
         prj.setProjectId(generateId(ModelConstants.PROJECT.toString(), timestampStr));
         prj.setUserId(dto.getUserId());
-        prj.setStatus(String.valueOf(StatusConstants.ACTIVE));
+        prj.setInf02(qs.getInf02());
+        prj.setParentId(qs.getParentId());
+        prj.setStatus(qs.getStatus());
         prj.setCreatedAt(nowTimestamp);
-
         try {
-            prj.setInf01(new ObjectMapper().writeValueAsString(qs.getInf01()));
+            if (qs.getInf01() != null) {
+                prj.setInf01(new ObjectMapper().writeValueAsString(qs.getInf01()));
+            }
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi chuyển inf01 sang JSON", e);
         }
@@ -134,6 +157,30 @@ public class QuestionService {
             } catch (Exception e) {
                 throw new RuntimeException("Lỗi khi parse inf01 từ JSON", e);
             }
+
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    public List<QuestionDto> getSummaryById(Long id){
+        List<Object[]> data = questionRepository.findProjectWithUserById(id);
+        List<QuestionDto> result = new ArrayList<>();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Object[] row : data) {
+            Project prj = (Project) row[0];
+            User us = (User) row[1];
+
+            QuestionDto dto = new QuestionDto();
+            dto.setInf02(prj.getInf02());
+            dto.setUserName(us != null ?
+                    (us.getFirst_name() != null ? us.getFirst_name() : "") +
+                            " " +
+                            (us.getLast_name() != null ? us.getLast_name() : "")
+                    : null);
 
             result.add(dto);
         }

@@ -20,6 +20,24 @@ public class Project {
     private String      status;
     private Timestamp   createdAt;
     private Timestamp   updatedAt;
+    private String parentId;
+    private String inf02;
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getInf02() {
+        return inf02;
+    }
+
+    public void setInf02(String inf02) {
+        this.inf02 = inf02;
+    }
 
     public Long  getProjectId() {
         return projectId;

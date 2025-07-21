@@ -14,4 +14,6 @@ public interface QuestionRepository extends JpaRepository<Project, Long> {
     List<Object[]> findAllQuestionsWithDocument();
     @Query("SELECT p, d FROM Project p LEFT JOIN Document d ON p.projectId = d.projectId WHERE p.projectId = :id")
     List<Object[]> findProjectWithDocumentsById(@Param("id") Long id);
+    @Query("SELECT p, u FROM Project p JOIN User u ON p.userId = u.userId WHERE p.parentId = :id")
+    List<Object[]> findProjectWithUserById(Long id);
 }

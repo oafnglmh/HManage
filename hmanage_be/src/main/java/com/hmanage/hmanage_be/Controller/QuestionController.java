@@ -39,4 +39,16 @@ public class QuestionController {
         QuestionDto qsDto = questionService.update(qs);
         return ResponseEntity.ok(qsDto);
     }
+
+    @GetMapping("/question/summary/{id}")
+    public ResponseEntity<List<QuestionDto>> getQuestionSummary(@PathVariable Long id) {
+        List<QuestionDto> questions = questionService.getSummaryById(id);
+        return ResponseEntity.ok(questions);
+    }
+
+    @PostMapping("/question/start")
+    public ResponseEntity<QuestionDto> questionStart(@RequestBody QuestionDto qs){
+        QuestionDto qsDto = questionService.add(qs);
+        return ResponseEntity.ok(qsDto);
+    }
 }
