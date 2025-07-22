@@ -1,0 +1,339 @@
+/* Layout tổng */
+.ctn {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  z-index: 0;
+}
+
+/* Ô tạo bài viết */
+.pc-mini {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-bottom: 24px;
+}
+.pc-mini:hover {
+  transform: translateY(-2px);
+}
+.pc-mini img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+.pc-mini input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: #555;
+}
+.pc-mini input:focus {
+  outline: none;
+}
+.icn span {
+  margin-left: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Modal overlay */
+.mdl-ovr {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* Modal content */
+.mdl-cnt {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  animation: floatUp 0.4s ease-out;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 1001;
+}
+.mdl-usr {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.mdl-usr img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.mdl-usr span {
+  font-weight: bold;
+  font-size: 16px;
+}
+.mdl-cnt textarea {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-size: 15px;
+  min-height: 200px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f2f2f2;
+  margin-bottom: 10px;
+}
+.mdl-cnt textarea:focus {
+  outline: none;
+}
+
+.file-upload {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.file-upload input[type="file"] {
+  display: none;
+}
+
+.file-placeholder {
+  background: #f5f5f5;
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #777;
+  transition: background 0.3s;
+}
+.file-placeholder:hover {
+  background: #e0e0e0;
+}
+
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.preview-item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.preview-item img,
+.preview-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: background 0.2s;
+}
+.remove-btn:hover {
+  background: #c0392b;
+}
+
+.mdl-act {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.mdl-act button {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.mdl-act button:hover {
+  background: #357ab8;
+}
+.mdl-act button:nth-child(2) {
+  background: #e74c3c;
+}
+.mdl-act button:nth-child(2):hover {
+  background: #c0392b;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Bài đăng đẹp hơn */
+.post-list {
+  position: relative;
+  z-index: 1;
+}
+
+.post-card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+  animation: fadeInUp 0.4s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.post-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.post-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+  border: 2px solid #eee;
+}
+
+.post-user {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.post-time {
+  font-size: 13px;
+  color: #888;
+}
+
+.post-content {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.post-media {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.media-image {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+.media-image:hover {
+  transform: scale(1.05);
+}
+
+.media-video {
+  width: 100%;
+  border-radius: 12px;
+  max-height: 220px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.post-footer {
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.like {
+  cursor: pointer;
+  color: #e0245e;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .post-media {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .post-user {
+    font-size: 15px;
+  }
+
+  .post-content {
+    font-size: 14px;
+  }
+
+  .mdl-cnt {
+    max-width: 90%;
+  }
+
+  .file-placeholder {
+    padding: 16px;
+  }
+}

@@ -1,76 +1,78 @@
+/* ===== Header ===== */
 .header {
-    background-color: white;
+    background-color: #ffffff;
     padding: 12px 24px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .logo {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     color: #2563eb;
 }
 
+/* ===== Navbar ===== */
 .nav {
     display: flex;
-    gap: 24px;
-}
-
-.nav-link {
-    color: #4b5563;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.nav-link:hover {
-    color: #3b82f6;
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 12px;
-}
-
-.btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.navbar {
-    background-color: #fff;
-    color: rgb(0, 0, 0);
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    gap: 32px;
+    background-color: #f9f9f9;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px #e5e7eb;
 }
 
 .nav-item {
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-decoration: none;
-    transition: 0.3s ease;
+    color: #4b5563;
+    transition: color 0.3s ease;
+    position: relative;
 }
 
-.nav-item:hover {
+.nav-item .icon {
+    font-size: 22px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-item .label {
+    margin-top: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
     background-color: #2563eb;
     color: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    position: absolute;
+    top: 38px;
+    z-index: 10;
 }
 
-.nav-item.active {
-    background-color: #1d4ed8;
-    color: white;
+/* Hover effect */
+.nav-item:hover .icon {
+    color: #2563eb;
+    transform: scale(1.1);
+}
+
+.nav-item:hover .label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Active state */
+.nav-item.active .icon {
+    color: #1d4ed8;
 }

@@ -3,8 +3,10 @@ import AppContent from "../src/components/Auth/js/AppContent";
 import HomePage from "./components/Home/components/home/js/HomePage";
 import QuestionSetList from "./components/Home/components/Question/js/QuestionSetList";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/Auth/js/ProtectedRoute"
-import Main from "./components/Home/components/home/js/main"
+import ProtectedRoute from "./components/Auth/js/ProtectedRoute";
+import Main from "./components/Home/components/home/js/main";
+import UserPage from "./components/Home/components/Users/js/UserPage"
+import SocialPage from "./components/Home/components/Socials/js/SocialPage"
 function App() {
   return (
 
@@ -15,6 +17,8 @@ function App() {
           <Route path="/" element={<HomePage />}>
             <Route path="home" element={<Main/>} />
             <Route path="questions" element={<QuestionSetList />} />
+            <Route path="users" element={<UserPage/>}/>
+            <Route path="socials" element={<SocialPage/>}/>
           </Route>
         </Route>
       </Routes>
