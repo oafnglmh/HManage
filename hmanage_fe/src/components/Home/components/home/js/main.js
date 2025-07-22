@@ -11,6 +11,12 @@ function HomePage() {
         if (transcript.includes("trắc nghiệm")) {
             navigate("/questions");
         }
+        if (transcript.includes("mạng xã hội")) {
+            navigate("/socials");
+        }
+        if (transcript.includes("trang cá nhân")) {
+            navigate("/users");
+        }
     }, [transcript]);
     const handleMicClick = () => {
         if (listening) {
