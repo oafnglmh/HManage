@@ -18,6 +18,15 @@ public class Document {
     private     String          fileType            ;
     private     String          filePath            ;
     private     Timestamp       uploadedAt          ;
+    private     Long            userId         ;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public Long  getDocumentId()                  {
         return documentId;

@@ -31,4 +31,7 @@ public class QuestionDto {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String userName;
+
+    private List<String> images;
+
 }

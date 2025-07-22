@@ -51,4 +51,11 @@ public class QuestionController {
         QuestionDto qsDto = questionService.add(qs);
         return ResponseEntity.ok(qsDto);
     }
+
+    @GetMapping("/social")
+    public ResponseEntity<List<QuestionDto>> getAllSns() {
+        List<QuestionDto> questions = questionService.getAllSns();
+        return ResponseEntity.ok(questions);
+    }
+
 }

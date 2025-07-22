@@ -16,4 +16,15 @@ public interface QuestionRepository extends JpaRepository<Project, Long> {
     List<Object[]> findProjectWithDocumentsById(@Param("id") Long id);
     @Query("SELECT p, u FROM Project p JOIN User u ON p.userId = u.userId WHERE p.parentId = :id")
     List<Object[]> findProjectWithUserById(Long id);
+
+    @Query("""
+        SELECT p, d1, u, d2 
+        FROM Project p 
+        LEFT JOIN Document d1 ON p.projectId = d1.projectId 
+        LEFT JOIN User u ON p.userId = u.userId 
+        LEFT JOIN Document d2 ON u.userId = d2.userId 
+        WHERE p.code LIKE 'SNS-%' AND p.status = '20'
+    """)
+    List<Object[]> findAllSnsWithDocumentsAndUserAvatars();
+
 }
