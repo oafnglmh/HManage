@@ -2,18 +2,86 @@ import React, { useEffect, useState } from "react";
 import "../css/Social.css";
 import { SocialService } from "../Services/SocialService";
 import Popup from "../../../../Notification/js/Popup";
+import { FaBell, FaComment, FaHeart, FaHome } from "react-icons/fa";
 
 const fakeAvatar = "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png";
 
 function SocialPage() {
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [commentInput, setCommentInput] = useState("");
+  const [comments, setComments] = useState({});
+  const [likes, setLikes] = useState({});
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ content: "", files: [] });
   const [popup, setPopup] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const contacts = [
+  { id: 1, name: "Lê Minh Hoàng", avatar: fakeAvatar },
+  { id: 2, name: "Nguyễn Thị Mai", avatar: fakeAvatar },
+  { id: 3, name: "Trần Văn B", avatar: fakeAvatar },
+];
+  const emojiList = [
+    "😀", "😃", "😄", "😁", "😆", "😂", "🤣", "🥲", "😊", "😇", "🙂", "🙃", "😉", "😌",
+    
+    "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😜", "🤪", "😝", "🤑",
+
+    "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😭", "😢", "😤", "😠", "😡",
+
+    "🤔", "🤨", "😐", "😑", "😶", "😶‍🌫️", "😳", "🥵", "🥶", "😱", "😨", "😰",
+
+    "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "🤲", "💪", "👋", "🤘", "✌️", "🤟", "☝️", "✋", "🖐️",
+
+    "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "❣️",
+
+    "🎉", "🎊", "🎈", "🎁", "🎂", "🍰", "🧁", "🍕", "🍔", "🍟", "🍣", "🍜", "🥤",
+
+    "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁",
+
+    "☀️", "🌤️", "⛅", "🌧️", "⛈️", "❄️", "🌈", "🔥", "💧", "🌊", "🌪️"
+  ];
 
   useEffect(() => {
     fetchData();
   }, []);
+  const toggleLike = (postId) => {
+      setLikes((prev) => {
+        const liked = prev[postId]?.liked || false;
+        const count = prev[postId]?.count || 0;
+        return {
+          ...prev,
+          [postId]: {
+            liked: !liked,
+            count: liked ? count - 1 : count + 1,
+          },
+        };
+      });
+  };
+
+  const openCommentModal = (post) => {
+    setSelectedPost(post);
+    if (!comments[post.id]) {
+      setComments((prev) => ({
+        ...prev,
+        [post.id]: [
+          { id: 1, user: "Mai", content: "Bài đăng hay quá!" ,avatar: "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png",date: "vừa xong"},
+          { id: 2, user: "Hoàng", content: "Tuyệt vời luôn 😍",avatar: "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png",date: "vừa xong" },
+        ],
+      }));
+    }
+  };
+
+  const addComment = () => {
+    if (!commentInput.trim()) return;
+    setComments((prev) => ({
+      ...prev,
+      [selectedPost.id]: [
+        ...(prev[selectedPost.id] || []),
+        { id: Date.now(), user: "Bạn", content: commentInput },
+      ],
+    }));
+    setCommentInput("");
+  };
 
   const fetchData = async () => {
     try {
@@ -74,6 +142,21 @@ function SocialPage() {
 
   return (
     <>
+    <div class="ctn-main">
+      <div className="left-sidebar">
+        <div className="sidebar-section">
+          <ul className="menu-list">
+            <li className="menu-item">
+              <FaHome className="menu-icon" />
+              <span className="menu-text">Trang chủ</span>
+            </li>
+            <li className="menu-item">
+              <FaBell className="menu-icon" />
+              <span className="menu-text">Thông báo</span>
+            </li>
+          </ul>
+        </div>
+    </div>
       <div className="ctn">
         <div className="pc-mini" onClick={() => setShowModal(true)}>
           <img src={fakeAvatar} alt="avatar" />
@@ -96,6 +179,30 @@ function SocialPage() {
                 value={newPost.content}
                 onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
               />
+              <div className="emoji-section">
+                <button className="emoji-toggle" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                  😊
+                </button>
+                {showEmojiPicker && (
+                  <div className="emoji-list">
+                    {emojiList.map((emoji, index) => (
+                      <span
+                        key={index}
+                        className="emoji"
+                        onClick={() => {
+                          setNewPost((prev) => ({
+                            ...prev,
+                            content: prev.content + emoji,
+                          }));
+                        }}
+                      >
+                        {emoji}
+                      </span>
+                    ))}
+                </div>
+                )}
+              </div>
+
               <div className="file-upload">
                 <label htmlFor="fileInput">
                   <div className="file-placeholder">📷 Chọn ảnh hoặc video</div>
@@ -123,7 +230,7 @@ function SocialPage() {
                           setNewPost({ ...newPost, files: updatedFiles });
                         }}
                       >
-                        ❌
+                          ❌
                       </span>
                       {file.type.startsWith("image") ? (
                         <img src={URL.createObjectURL(file)} alt="preview" />
@@ -157,7 +264,7 @@ function SocialPage() {
                 {post.images && post.images.map((media, i) => {
                   const isVideo = media.endsWith(".mp4") || media.includes("video");
                   return isVideo ? (
-                    <video key={i} src={media} controls className="media-video" />
+                    <video key={i} src={`/uploaded-media/${media}`} controls className="media-video" />
                   ) : (
                    <img
                     key={i}
@@ -171,12 +278,25 @@ function SocialPage() {
                 })}
               </div>
               <div className="post-footer">
-                <span className="like">❤️ {post.inf02} lượt thích</span>
+                <span
+                  className="like"
+                  style={{ color: likes[post.id]?.liked ? "hotpink" : "#333", cursor: "pointer" }}
+                  onClick={() => toggleLike(post.id)}
+                >
+                  <FaHeart className="menu-icon" /> {post.inf02 + (likes[post.id]?.count || 0)}
+                </span>
+                <span
+                  className="comment-btn"
+                  style={{ marginLeft: "20px", cursor: "pointer", color: "#007bff" }}
+                  onClick={() => openCommentModal(post)}
+                >
+                  <FaComment className="menu-icon" />
+                </span>
               </div>
+
             </div>
           ))}
         </div>
-
         {popup && (
           <Popup
             type={popup.type}
@@ -185,6 +305,85 @@ function SocialPage() {
           />
         )}
       </div>
+      <div className="right-sidebar">
+        <div className="sidebar-section">
+          <h3 className="contact-title">Người liên hệ</h3>
+          <ul className="contact-list">
+            {contacts.map((contact) => (
+              <li key={contact.id} className="contact-item">
+                <img
+                  src={contact.avatar}
+                  alt={contact.name}
+                  className="contact-avatar"
+                />
+                <span className="contact-name">{contact.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      </div>
+      {selectedPost && (
+        <div className="mdl-ovr">
+          <div className="mdl-cmt">
+            <h3 style={{ marginBottom: 10 }}>Bình luận bài đăng</h3>
+
+            <div className="cmt-list">
+              {(comments[selectedPost.id] || []).map((cmt) => (
+                <div key={cmt.id} className="cmt-item animate-fade-in">
+                  <img src={cmt.avatar} alt="avatar" className="cmt-avatar" />
+                  <div className="cmt-content">
+                    <div className="cmt-header">
+                      <span className="cmt-user">{cmt.user}</span>
+                      <span className="cmt-date">{cmt.date}</span>
+                    </div>
+                    <div className="cmt-text">{cmt.content}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="cmt-input-section">
+              <textarea
+                className="cmt-input"
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                placeholder="Viết bình luận..."
+              />
+
+              <div className="emoji-section">
+                <button
+                  className="emoji-toggle"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                >
+                  😊
+                </button>
+
+                {showEmojiPicker && (
+                  <div className="emoji-list">
+                    {emojiList.map((emoji, index) => (
+                      <span
+                        key={index}
+                        className="emoji"
+                        onClick={() => setCommentInput((prev) => prev + emoji)}
+                      >
+                        {emoji}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mdl-act">
+              <button onClick={addComment}>Gửi</button>
+              <button onClick={() => setSelectedPost(null)}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </>
   );
 }
