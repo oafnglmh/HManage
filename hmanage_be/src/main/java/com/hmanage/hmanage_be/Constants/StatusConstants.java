@@ -27,4 +27,7 @@ public class StatusConstants {
 
     /** Trạng thái bài làm trắc nghiệm */
     public static final Integer START = 10;
+
+    /** Trạng thái đăng bài mạng xã hội */
+    public static final Integer SOCIAL = 20;
 }

@@ -125,7 +125,7 @@ public class QuestionService {
                     Document doc = new Document();
                     doc.setDocumentId(generateId(ModelConstants.DOCUMENT.toString(), timestampStr + count));
                     doc.setProjectId(prj.getProjectId());
-                    doc.setFilePath(fileName); // ✅ Lưu lại fileName để FE dùng
+                    doc.setFilePath(fileName);
                     doc.setUploadedAt(nowTimestamp);
                     documentRepository.save(doc);
 
@@ -158,10 +158,6 @@ public class QuestionService {
             Document doc = (Document) row[1];
 
             QuestionDto dto = new QuestionDto();
-            System.out.println("Dòng lấy ra:");
-            System.out.println("ProjectId: " + prj.getProjectId());
-            System.out.println("DocumentId: " + (doc != null ? doc.getDocumentId() : "null"));
-            System.out.println("Code: " + prj.getCode());
             dto.setName(prj.getName());
             dto.setDescription(prj.getDescription());
             dto.setMinutes(prj.getMinutes());
@@ -240,34 +236,113 @@ public class QuestionService {
     }
 
     public QuestionDto update(QuestionDto dto) {
-        Optional<Project> optionalProject = questionRepository.findById(dto.getProjectId());
-        if (!optionalProject.isPresent()) {
-            throw new RuntimeException("Không tìm thấy Project với ID: " + dto.getProjectId());
-        }
+        LocalDateTime now = LocalDateTime.now();
+        String timestampStr = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
 
-        Project project = optionalProject.get();
+        Project project = questionRepository.findById(dto.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Project với ID: " + dto.getProjectId()));
 
-        project.setName(dto.getName());
-        project.setDescription(dto.getDescription());
-        project.setMinutes(dto.getMinutes());
-        project.setStatus(dto.getStatus());
-        project.setCode(dto.getCode());
-        project.setUserId(dto.getUserId());
-        project.setCreatedAt(dto.getCreatedAt());
+        if (dto.getName() != null) project.setName(dto.getName());
+        if (dto.getDescription() != null) project.setDescription(dto.getDescription());
+        if (dto.getMinutes() != null) project.setMinutes(dto.getMinutes());
+        if (dto.getStatus() != null) project.setStatus(dto.getStatus());
+        if (dto.getCode() != null) project.setCode(dto.getCode());
+        if (dto.getUserId() != null) project.setUserId(dto.getUserId());
+        if (dto.getCreatedAt() != null) project.setCreatedAt(dto.getCreatedAt());
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonInf01 = mapper.writeValueAsString(dto.getInf01());
-            project.setInf01(jsonInf01);
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi convert inf01 thành JSON", e);
+
+        if (dto.getInf01() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonInf01 = mapper.writeValueAsString(dto.getInf01());
+                project.setInf01(jsonInf01);
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi khi convert inf01 thành JSON", e);
+            }
         }
 
         project = questionRepository.save(project);
 
+        List<Document> currentDocs = documentRepository.findAllByProjectId(dto.getProjectId());
+        List<Document> docsToUnlink = new ArrayList<>();
+        List<Document> docsToInsert = new ArrayList<>();
+
+        Set<String> incomingFilePaths = new HashSet<>();
+        int count = 1;
+
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            for (String base64Media : dto.getImages()) {
+
+                if (base64Media.startsWith("SNS_")) {
+                    incomingFilePaths.add(base64Media);
+                    continue;
+                }
+
+                try {
+                    String[] parts = base64Media.split(",");
+                    if (parts.length != 2) continue;
+
+                    String meta = parts[0];
+                    String base64Data = parts[1];
+
+                    String extension;
+                    if (meta.contains("image/jpeg")) extension = ".jpg";
+                    else if (meta.contains("image/png")) extension = ".png";
+                    else if (meta.contains("image/gif")) extension = ".gif";
+                    else if (meta.contains("video/mp4")) extension = ".mp4";
+                    else if (meta.contains("video/webm")) extension = ".webm";
+                    else if (meta.contains("video/ogg")) extension = ".ogg";
+                    else extension = ".bin";
+
+                    String fileName = "SNS_" + timestampStr + "_" + count + extension;
+                    incomingFilePaths.add(fileName);
+
+                    byte[] fileBytes = Base64.getDecoder().decode(base64Data);
+                    File folder = new File("E:/HManage/hmanage_fe/public/uploaded-media/");
+                    if (!folder.exists()) folder.mkdirs();
+
+                    String path = folder.getAbsolutePath() + "/" + fileName;
+                    try (FileOutputStream fos = new FileOutputStream(path)) {
+                        fos.write(fileBytes);
+                    }
+
+                    Document newDoc = new Document();
+                    newDoc.setDocumentId(generateId(ModelConstants.DOCUMENT.toString(), timestampStr + count));
+                    newDoc.setProjectId(dto.getProjectId());
+                    newDoc.setFilePath(fileName);
+                    newDoc.setUploadedAt(nowTimestamp);
+
+                    docsToInsert.add(newDoc);
+                    count++;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Lỗi khi xử lý media", e);
+                }
+            }
+        }
+        if(incomingFilePaths.size() > 0) {
+            for (Document doc : currentDocs) {
+                if (!incomingFilePaths.contains(doc.getFilePath())) {
+                    doc.setProjectId(null);
+                    docsToUnlink.add(doc);
+                }
+            }
+        }
+
+        if (!docsToUnlink.isEmpty()) {
+            documentRepository.saveAll(docsToUnlink);
+        }
+
+        if (!docsToInsert.isEmpty()) {
+            documentRepository.saveAll(docsToInsert);
+        }
+
         dto.setProjectId(project.getProjectId());
         return dto;
     }
+
 
     public List<QuestionDto> getAllSns() {
         List<Object[]> data = questionRepository.findAllSnsWithDocumentsAndUserAvatars();
@@ -287,6 +362,8 @@ public class QuestionService {
             dto.setDescription(prj.getDescription());
             dto.setCreatedAt(prj.getCreatedAt());
             dto.setUserId(prj.getUserId());
+            dto.setCode(prj.getCode());
+            dto.setCreatedAt(prj.getCreatedAt());
 
             if (us != null) {
                 String fullName = (us.getFirst_name() != null ? us.getFirst_name() : "") +
