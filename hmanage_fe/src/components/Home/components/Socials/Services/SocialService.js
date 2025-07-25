@@ -15,7 +15,7 @@ export const SocialService = {
         return response.data;
     },
     update: async (payload)  => {
-        const response = await request("POST", "/social/update", payload);
+        const response = await request("POST", "/question/update", payload);
         return response.data;
     },
 };

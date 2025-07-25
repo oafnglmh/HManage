@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../css/Social.css";
 import { SocialService } from "../Services/SocialService";
 import Popup from "../../../../Notification/js/Popup";
-import { FaBell, FaComment, FaHeart, FaHome } from "react-icons/fa";
+import { FaBell, FaComment, FaEdit, FaHeart, FaHome } from "react-icons/fa";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const fakeAvatar = "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png";
 
@@ -16,6 +17,7 @@ function SocialPage() {
   const [popup, setPopup] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [menuOpenPostId, setMenuOpenPostId] = useState(null);
   const contacts = [
   { id: 1, name: "Lê Minh Hoàng", avatar: fakeAvatar },
   { id: 2, name: "Nguyễn Thị Mai", avatar: fakeAvatar },
@@ -83,6 +85,30 @@ function SocialPage() {
     setCommentInput("");
   };
 
+  const handleEditPost = (post) => {
+    setShowModal(true);
+    setNewPost({ content: post.description, files: Array.isArray(post.images) ? post.images : [], projectId:post.projectId, userId : post.userId,createdAt : post.createdAt, code:post.code });
+    setMenuOpenPostId(null);
+  };
+
+  const handleDeletePost = async (postId) => {
+    try {
+      const newItem = {
+        status: "-1",
+        projectId: postId,
+      };
+
+      await SocialService.update(newItem);
+      setPopup({ type: "success", message: "Xoá bài viết thành công" });
+      fetchData();
+    } catch (error) {
+      setPopup({ type: "error", message: "Xoá thất bại" });
+    } finally {
+      setMenuOpenPostId(null);
+    }
+  };
+
+
   const fetchData = async () => {
     try {
       const data = await SocialService.getAll();
@@ -96,6 +122,7 @@ function SocialPage() {
 
   const handlePost = async () => {
     if (!newPost.content && newPost.files.length === 0) return;
+
 
     try {
       const base64Files = await Promise.all(
@@ -117,6 +144,7 @@ function SocialPage() {
         status: "20",
       };
 
+
       await SocialService.add(newItem);
       setPopup({ type: "success", message: "Thêm bài thành công" });
       setNewPost({ content: "", files: [] });
@@ -126,6 +154,42 @@ function SocialPage() {
       setPopup({ type: "error", message: "Thêm bài thất bại" });
     }
   };
+
+  const handleEdit = async () => {
+    if (!newPost.content && newPost.files.length === 0) return;
+
+    try {
+      const base64Files = await Promise.all(
+        newPost.files.map((file) => {
+          if (typeof file === "string") return file;
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+          });
+        })
+      );
+
+      const newItem = {
+        description: newPost.content,
+        images: base64Files,
+        status: "20",
+        projectId: newPost.projectId,
+        userId   :newPost.userId,
+        createdAt:newPost.createdAt,
+        code    : newPost.code
+      };
+
+      await SocialService.update(newItem);
+      setPopup({ type: "success", message: "Chỉnh sửa thành công" });
+      setNewPost({ content: "", files: [], projectId: "", createdAt: null, code: null, userId : null });
+      setShowModal(false);
+      fetchData();
+    } catch (error) {
+      setPopup({ type: "error", message: "Thêm bài thất bại" });
+    }
+    };
 
   const openPreview = (src) => {
     const win = window.open("", "_blank");
@@ -232,17 +296,28 @@ function SocialPage() {
                       >
                           ❌
                       </span>
-                      {file.type.startsWith("image") ? (
-                        <img src={URL.createObjectURL(file)} alt="preview" />
-                      ) : (
-                        <video src={URL.createObjectURL(file)} controls />
-                      )}
+                      {typeof file === "string" ? (
+                          file.endsWith(".mp4") ? (
+                            <video src={`/uploaded-media/${file}`} controls />
+                          ) : (
+                            <img src={`/uploaded-media/${file}`} alt="preview" />
+                          )
+                        ) : file?.type?.startsWith("image") ? (
+                          <img src={URL.createObjectURL(file)} alt="preview" />
+                        ) : file?.type?.startsWith("video") ? (
+                          <video src={URL.createObjectURL(file)} controls />
+                        ) : null}
                     </div>
                   ))}
                 </div>
               </div>
               <div className="mdl-act">
-                <button onClick={handlePost}>Đăng</button>
+                {newPost.projectId != null ? (
+                  <button onClick={handleEdit}>Sửa</button>
+                ) : (
+                  <button onClick={handlePost}>Đăng</button>
+                )}
+
                 <button onClick={() => setShowModal(false)}>Huỷ</button>
               </div>
             </div>
@@ -257,6 +332,23 @@ function SocialPage() {
                 <div>
                   <div className="post-user">{post.userName || "Người dùng"}</div>
                   <div className="post-time">{new Date(post.createdAt).toLocaleString()}</div>
+                </div>
+                <div className="post-menu-wrapper">
+                  <span
+                    className="post-menu-trigger"
+                    onClick={() =>
+                      setMenuOpenPostId(menuOpenPostId === post.projectId ? null : post.projectId)
+                    }
+                  >
+                    ⋮
+                  </span>
+
+                  {menuOpenPostId === post.projectId && (
+                    <div className="post-menu">
+                      <button onClick={() => handleEditPost(post)}> <FaEdit style={{ color: 'green' }} /></button>
+                      <button onClick={() => handleDeletePost(post.projectId)}><FaDeleteLeft style={{ color: 'red' }} /></button>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="post-content" style={{ whiteSpace: "pre-line" }}>{post.description}</div>
