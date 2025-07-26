@@ -31,7 +31,7 @@ public class QuestionDto {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String userName;
-
+    private Integer countLike;
     private List<String> images;
-
+    private List<String> userLikeId;
 }

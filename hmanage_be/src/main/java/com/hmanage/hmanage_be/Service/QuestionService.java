@@ -8,9 +8,11 @@ import com.hmanage.hmanage_be.dto.QuestionItemDto;
 import com.hmanage.hmanage_be.dto.SignUpDto;
 import com.hmanage.hmanage_be.dto.UserDto;
 import com.hmanage.hmanage_be.models.Document;
+import com.hmanage.hmanage_be.models.Favourite;
 import com.hmanage.hmanage_be.models.Project;
 import com.hmanage.hmanage_be.models.User;
 import com.hmanage.hmanage_be.repositories.DocumentRepository;
+import com.hmanage.hmanage_be.repositories.FavouriteReponsitory;
 import com.hmanage.hmanage_be.repositories.QuestionRepository;
 import com.hmanage.hmanage_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import java.util.*;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final DocumentRepository documentRepository;
+    private final FavouriteReponsitory favouriteRepository;
     public QuestionDto add(QuestionDto qs) {
         String status = qs.getStatus();
         if (status == null) {
@@ -346,41 +349,63 @@ public class QuestionService {
 
     public List<QuestionDto> getAllSns() {
         List<Object[]> data = questionRepository.findAllSnsWithDocumentsAndUserAvatars();
-        Map<Long, QuestionDto> dtoMap = new LinkedHashMap<>(); // preserve order
+        Map<Long, QuestionDto> dtoMap = new LinkedHashMap<>();
 
         for (Object[] row : data) {
             Project prj = (Project) row[0];
             Document postDoc = (Document) row[1];
             User us = (User) row[2];
             Document userAvatar = (Document) row[3];
+            Favourite fvr = (Favourite) row[4];
 
             Long projectId = prj.getProjectId();
 
             QuestionDto dto = dtoMap.getOrDefault(projectId, new QuestionDto());
-            dto.setProjectId(projectId);
-            dto.setInf02(prj.getInf02());
-            dto.setDescription(prj.getDescription());
-            dto.setCreatedAt(prj.getCreatedAt());
-            dto.setUserId(prj.getUserId());
-            dto.setCode(prj.getCode());
-            dto.setCreatedAt(prj.getCreatedAt());
 
-            if (us != null) {
-                String fullName = (us.getFirst_name() != null ? us.getFirst_name() : "") +
-                        " " +
-                        (us.getLast_name() != null ? us.getLast_name() : "");
-                dto.setUserName(fullName.trim());
-            }
+            if (!dtoMap.containsKey(projectId)) {
+                dto.setProjectId(projectId);
+                dto.setInf02(prj.getInf02());
+                dto.setDescription(prj.getDescription());
+                dto.setCreatedAt(prj.getCreatedAt());
+                dto.setUserId(prj.getUserId());
+                dto.setCode(prj.getCode());
 
-            if (userAvatar != null) {
-                dto.setAvatar(userAvatar.getFilePath());
+                if (us != null) {
+                    String fullName = (us.getFirst_name() != null ? us.getFirst_name() : "") +
+                            " " +
+                            (us.getLast_name() != null ? us.getLast_name() : "");
+                    dto.setUserName(fullName.trim());
+                }
+
+                if (userAvatar != null) {
+                    dto.setAvatar(userAvatar.getFilePath());
+                }
+
+                dto.setImages(new ArrayList<>());
             }
 
             if (postDoc != null) {
                 List<String> images = dto.getImages();
                 if (images == null) images = new ArrayList<>();
-                images.add(postDoc.getFilePath());
+                String filePath = postDoc.getFilePath();
+                if (!images.contains(filePath)) {
+                    images.add(filePath);
+                }
                 dto.setImages(images);
+            }
+
+            if (fvr != null) {
+                List<String> userLikeId = dto.getUserLikeId();
+                if (userLikeId == null) userLikeId = new ArrayList<>();
+
+                String favUserId = String.valueOf(fvr.getUserId());
+                if (!userLikeId.contains(favUserId)) {
+                    userLikeId.add(favUserId);
+                    dto.setUserLikeId(userLikeId);
+
+                    int likeCount = dto.getCountLike() == null ? 0 : dto.getCountLike();
+                    dto.setCountLike(likeCount + 1);
+                }
             }
 
             dtoMap.put(projectId, dto);
@@ -388,5 +413,29 @@ public class QuestionService {
 
         return new ArrayList<>(dtoMap.values());
     }
+
+
+    public void like(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto dto = (UserDto) authentication.getPrincipal();
+
+        LocalDateTime now = LocalDateTime.now();
+        String timestampStr = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+        Long userId = dto.getUserId();
+        List<Favourite> data = questionRepository.findLike(userId, id);
+
+        if (data.isEmpty()) {
+            Favourite fvr = new Favourite();
+            fvr.setFavouriteId(generateId(ModelConstants.FAVOURITE.toString(), timestampStr));
+            fvr.setProjectId(id);
+            fvr.setUserId(userId);
+            favouriteRepository.save(fvr);
+        } else {
+            favouriteRepository.delete(data.get(0));
+        }
+
+    }
+
 
 }

@@ -8,16 +8,16 @@ import jakarta.persistence.Table;
 @Table(name = "favourite")
 public class Favourite {
     @Id
-    private Long  eventId;
+    private Long  favouriteId;
     private Long projectId;
     private Long userId;
 
-    public Long getEventId() {
-        return eventId;
+    public Long getFavouriteId() {
+        return favouriteId;
     }
 
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
+    public void setFavouriteId(Long eventId) {
+        this.favouriteId = eventId;
     }
 
     public Long getProjectId() {

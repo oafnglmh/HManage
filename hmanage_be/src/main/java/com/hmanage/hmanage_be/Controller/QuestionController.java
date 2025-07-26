@@ -58,4 +58,10 @@ public class QuestionController {
         return ResponseEntity.ok(questions);
     }
 
+    @PostMapping("/project/like/{id}")
+    public ResponseEntity<QuestionDto> projectLike(@PathVariable Long id) {
+        questionService.like(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
