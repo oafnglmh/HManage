@@ -8,8 +8,9 @@ export function AuthProvider({ children }) {
     const login = (token) => {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
+        localStorage.setItem("userId", token.userId);
     };
-
+    
     const logout = () => {
         setIsLoggedIn(false);
         localStorage.removeItem("token");

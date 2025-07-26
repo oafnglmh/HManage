@@ -46,19 +46,32 @@ function SocialPage() {
   useEffect(() => {
     fetchData();
   }, []);
-  const toggleLike = (postId) => {
-      setLikes((prev) => {
-        const liked = prev[postId]?.liked || false;
-        const count = prev[postId]?.count || 0;
-        return {
-          ...prev,
-          [postId]: {
-            liked: !liked,
-            count: liked ? count - 1 : count + 1,
-          },
-        };
+  const toggleLike = (postId, post) => {
+    const userId = localStorage.getItem("userId");
+
+    setLikes((prev) => {
+      const liked = post.userLikeId?.includes(userId);
+      const count = prev[postId]?.count || 0;
+      return {
+        ...prev,
+        [postId]: {
+          liked: !liked,
+          count: liked ? count - 1 : count + 1,
+        },
+      };
+    });
+
+
+    SocialService.like(postId)
+      .then(() => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Lỗi gọi like:", error);
       });
   };
+
+
 
   const openCommentModal = (post) => {
     setSelectedPost(post);
@@ -113,6 +126,8 @@ function SocialPage() {
     try {
       const data = await SocialService.getAll();
       setPosts(data);
+      setLikes({});
+      console.log("data when get", data);
     } catch (error) {
       console.error("Lỗi khi tải danh sách:", error);
     }
@@ -325,69 +340,88 @@ function SocialPage() {
         )}
 
         <div className="post-list">
-          {posts.map((post, idx) => (
-            <div className="post-card animated" key={idx} style={{ animationDelay: `${idx * 0.05}s` }}>
-              <div className="post-header">
-                <img src={post.avatar || fakeAvatar} alt="avatar" className="post-avatar" />
-                <div>
-                  <div className="post-user">{post.userName || "Người dùng"}</div>
-                  <div className="post-time">{new Date(post.createdAt).toLocaleString()}</div>
-                </div>
-                <div className="post-menu-wrapper">
-                  <span
-                    className="post-menu-trigger"
-                    onClick={() =>
-                      setMenuOpenPostId(menuOpenPostId === post.projectId ? null : post.projectId)
-                    }
-                  >
-                    ⋮
-                  </span>
+          {posts.map((post, idx) => {
+              const userId = localStorage.getItem("userId");
+              const postLikes = likes[post.projectId];
+              const isLiked =postLikes?.liked ?? (Array.isArray(post.userLikeId) && post.userLikeId.includes(userId));
 
-                  {menuOpenPostId === post.projectId && (
-                    <div className="post-menu">
-                      <button onClick={() => handleEditPost(post)}> <FaEdit style={{ color: 'green' }} /></button>
-                      <button onClick={() => handleDeletePost(post.projectId)}><FaDeleteLeft style={{ color: 'red' }} /></button>
+              return (
+                <div className="post-card animated" key={idx} style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <div className="post-header">
+                    <img src={post.avatar || fakeAvatar} alt="avatar" className="post-avatar" />
+                    <div>
+                      <div className="post-user">{post.userName || "Người dùng"}</div>
+                      <div className="post-time">{new Date(post.createdAt).toLocaleString()}</div>
                     </div>
-                  )}
+                    <div className="post-menu-wrapper">
+                      <span
+                        className="post-menu-trigger"
+                        onClick={() =>
+                          setMenuOpenPostId(menuOpenPostId === post.projectId ? null : post.projectId)
+                        }
+                      >
+                        ⋮
+                      </span>
+                      {menuOpenPostId === post.projectId && (
+                        <div className="post-menu">
+                          <button onClick={() => handleEditPost(post)}>
+                            <FaEdit style={{ color: "green" }} />
+                          </button>
+                          <button onClick={() => handleDeletePost(post.projectId)}>
+                            <FaDeleteLeft style={{ color: "red" }} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="post-content" style={{ whiteSpace: "pre-line" }}>
+                    {post.description}
+                  </div>
+
+                  <div className="post-media">
+                    {post.images &&
+                      post.images.map((media, i) => {
+                        const isVideo = media.endsWith(".mp4") || media.includes("video");
+                        return isVideo ? (
+                          <video key={i} src={`/uploaded-media/${media}`} controls className="media-video" />
+                        ) : (
+                          <img
+                            key={i}
+                            src={`/uploaded-media/${media}`}
+                            alt={`media-${i}`}
+                            className="media-image"
+                            onClick={() => openPreview(media)}
+                          />
+                        );
+                      })}
+                  </div>
+
+                  <div className="post-footer">
+                    <span
+                      className="like"
+                      style={{
+                        color: isLiked ? "hotpink" : "steelblue",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => toggleLike(post.projectId, post)}
+
+                    >
+                      <FaHeart className="menu-icon" />{" "}
+                      {post.countLike + (likes[post.projectId]?.count || 0)}
+                    </span>
+
+                    <span
+                      className="comment-btn"
+                      style={{ marginLeft: "20px", cursor: "pointer", color: "#007bff" }}
+                      onClick={() => openCommentModal(post)}
+                    >
+                      <FaComment className="menu-icon" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="post-content" style={{ whiteSpace: "pre-line" }}>{post.description}</div>
-              <div className="post-media">
-                {post.images && post.images.map((media, i) => {
-                  const isVideo = media.endsWith(".mp4") || media.includes("video");
-                  return isVideo ? (
-                    <video key={i} src={`/uploaded-media/${media}`} controls className="media-video" />
-                  ) : (
-                   <img
-                    key={i}
-                    src={`/uploaded-media/${media}`}
-                    alt={`media-${i}`}
-                    className="media-image"
-                    onClick={() => openPreview(media)}
-                  />
-
-                  );
-                })}
-              </div>
-              <div className="post-footer">
-                <span
-                  className="like"
-                  style={{ color: likes[post.id]?.liked ? "hotpink" : "#333", cursor: "pointer" }}
-                  onClick={() => toggleLike(post.id)}
-                >
-                  <FaHeart className="menu-icon" /> {post.inf02 + (likes[post.id]?.count || 0)}
-                </span>
-                <span
-                  className="comment-btn"
-                  style={{ marginLeft: "20px", cursor: "pointer", color: "#007bff" }}
-                  onClick={() => openCommentModal(post)}
-                >
-                  <FaComment className="menu-icon" />
-                </span>
-              </div>
-
-            </div>
-          ))}
+              );
+            })}
         </div>
         {popup && (
           <Popup

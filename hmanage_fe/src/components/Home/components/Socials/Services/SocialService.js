@@ -18,4 +18,8 @@ export const SocialService = {
         const response = await request("POST", "/question/update", payload);
         return response.data;
     },
+    like : async  (id) =>{
+        const response = await request("POST",`/project/like/${id}`,{});
+        return response.data
+    }
 };
