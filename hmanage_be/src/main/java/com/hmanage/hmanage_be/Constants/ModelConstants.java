@@ -56,6 +56,8 @@ public class ModelConstants {
     public static final Integer ACTIVITY        = 1017;
 
     // favourite model constant
+    public static final Integer FAVOURITE       = 1018;
 
-    public static final Integer FAVOURITE        = 1018;
+    // comment model constant
+    public static final Integer COMMENT         = 1019;
 }

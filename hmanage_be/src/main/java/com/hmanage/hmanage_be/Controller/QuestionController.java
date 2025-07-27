@@ -1,6 +1,7 @@
 package com.hmanage.hmanage_be.Controller;
 
 import com.hmanage.hmanage_be.Service.QuestionService;
+import com.hmanage.hmanage_be.dto.CommentDto;
 import com.hmanage.hmanage_be.dto.QuestionDto;
 import com.hmanage.hmanage_be.models.Project;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,12 @@ public class QuestionController {
     public ResponseEntity<QuestionDto> projectLike(@PathVariable Long id) {
         questionService.like(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/project/add/comment")
+    public ResponseEntity<CommentDto> addComment(@RequestBody CommentDto cmtDto){
+        CommentDto commentDto = questionService.addComment(cmtDto);
+        return ResponseEntity.ok(commentDto);
     }
 
 }

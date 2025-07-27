@@ -34,4 +34,6 @@ public class QuestionDto {
     private Integer countLike;
     private List<String> images;
     private List<String> userLikeId;
+    private List<CommentDto> O_Comments;
+
 }

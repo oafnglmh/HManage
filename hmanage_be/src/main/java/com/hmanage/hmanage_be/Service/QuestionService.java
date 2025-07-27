@@ -3,19 +3,11 @@ package com.hmanage.hmanage_be.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hmanage.hmanage_be.Constants.ModelConstants;
 import com.hmanage.hmanage_be.Constants.StatusConstants;
-import com.hmanage.hmanage_be.dto.QuestionDto;
-import com.hmanage.hmanage_be.dto.QuestionItemDto;
-import com.hmanage.hmanage_be.dto.SignUpDto;
-import com.hmanage.hmanage_be.dto.UserDto;
-import com.hmanage.hmanage_be.models.Document;
-import com.hmanage.hmanage_be.models.Favourite;
-import com.hmanage.hmanage_be.models.Project;
-import com.hmanage.hmanage_be.models.User;
-import com.hmanage.hmanage_be.repositories.DocumentRepository;
-import com.hmanage.hmanage_be.repositories.FavouriteReponsitory;
-import com.hmanage.hmanage_be.repositories.QuestionRepository;
-import com.hmanage.hmanage_be.repositories.UserRepository;
+import com.hmanage.hmanage_be.dto.*;
+import com.hmanage.hmanage_be.models.*;
+import com.hmanage.hmanage_be.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,6 +25,8 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final DocumentRepository documentRepository;
     private final FavouriteReponsitory favouriteRepository;
+    private final CommentRepository commentRepository;
+    private final SimpMessagingTemplate messagingTemplate;
     public QuestionDto add(QuestionDto qs) {
         String status = qs.getStatus();
         if (status == null) {
@@ -348,7 +342,7 @@ public class QuestionService {
 
 
     public List<QuestionDto> getAllSns() {
-        List<Object[]> data = questionRepository.findAllSnsWithDocumentsAndUserAvatars();
+        List<Object[]> data = questionRepository.findAllSnsProjects();
         Map<Long, QuestionDto> dtoMap = new LinkedHashMap<>();
 
         for (Object[] row : data) {
@@ -359,7 +353,6 @@ public class QuestionService {
             Favourite fvr = (Favourite) row[4];
 
             Long projectId = prj.getProjectId();
-
             QuestionDto dto = dtoMap.getOrDefault(projectId, new QuestionDto());
 
             if (!dtoMap.containsKey(projectId)) {
@@ -382,37 +375,65 @@ public class QuestionService {
                 }
 
                 dto.setImages(new ArrayList<>());
+                dto.setUserLikeId(new ArrayList<>());
+                dto.setO_Comments(new ArrayList<>());
             }
 
             if (postDoc != null) {
                 List<String> images = dto.getImages();
-                if (images == null) images = new ArrayList<>();
                 String filePath = postDoc.getFilePath();
                 if (!images.contains(filePath)) {
                     images.add(filePath);
                 }
-                dto.setImages(images);
             }
 
             if (fvr != null) {
                 List<String> userLikeId = dto.getUserLikeId();
-                if (userLikeId == null) userLikeId = new ArrayList<>();
-
                 String favUserId = String.valueOf(fvr.getUserId());
                 if (!userLikeId.contains(favUserId)) {
                     userLikeId.add(favUserId);
-                    dto.setUserLikeId(userLikeId);
-
-                    int likeCount = dto.getCountLike() == null ? 0 : dto.getCountLike();
-                    dto.setCountLike(likeCount + 1);
+                    dto.setCountLike(userLikeId.size());
                 }
             }
 
             dtoMap.put(projectId, dto);
         }
 
+        List<Long> projectIds = new ArrayList<>(dtoMap.keySet());
+        List<Object[]> commentData = questionRepository.findCommentsByProjectIds(projectIds);
+
+        for (Object[] row : commentData) {
+            Comment cmt = (Comment) row[0];
+            User us2 = (User) row[1];
+            Long projectId = cmt.getProjectId();
+
+            if (!dtoMap.containsKey(projectId)) continue;
+            QuestionDto dto = dtoMap.get(projectId);
+            List<CommentDto> commentList = dto.getO_Comments();
+            if (commentList == null) commentList = new ArrayList<>();
+
+
+            CommentDto commentDto = new CommentDto();
+            commentDto.setCommentId(cmt.getCommentId());
+            commentDto.setText(cmt.getText());
+            commentDto.setProjectId(cmt.getProjectId());
+            commentDto.setUserId(cmt.getUserId());
+            commentDto.setCreatedAt(cmt.getCreatedAt());
+
+            if (us2 != null) {
+                String fullName = (us2.getFirst_name() != null ? us2.getFirst_name() : "") +
+                        " " +
+                        (us2.getLast_name() != null ? us2.getLast_name() : "");
+                commentDto.setUserName(fullName.trim());
+            }
+
+            commentList.add(commentDto);
+            dto.setO_Comments(commentList);
+        }
+
         return new ArrayList<>(dtoMap.values());
     }
+
 
 
     public void like(Long id) {
@@ -435,6 +456,33 @@ public class QuestionService {
             favouriteRepository.delete(data.get(0));
         }
 
+    }
+
+    public CommentDto addComment (CommentDto dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto dtoUser = (UserDto) authentication.getPrincipal();
+
+        LocalDateTime now = LocalDateTime.now();
+        String timestampStr = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+        Comment cmt = new Comment();
+        cmt.setCommentId(generateId(ModelConstants.COMMENT.toString(), timestampStr));
+        cmt.setUserId(dtoUser.getUserId());
+        cmt.setProjectId(dto.getProjectId());
+        cmt.setText(dto.getText());
+        cmt.setCreatedAt(dto.getCreatedAt());
+        commentRepository.save(cmt);
+
+        dto.setCommentId(cmt.getCommentId());
+        dto.setUserId(cmt.getUserId());
+
+        String fullName = (dtoUser.getFirst_name() != null ? dtoUser.getFirst_name() : "") +
+                " " +
+                (dtoUser.getLast_name() != null ? dtoUser.getLast_name() : "");
+        dto.setUserName(fullName.trim());
+        messagingTemplate.convertAndSend("/topic/project/" + dto.getProjectId(), dto);
+
+        return dto;
     }
 
 
