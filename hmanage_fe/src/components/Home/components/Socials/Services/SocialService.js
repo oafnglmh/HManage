@@ -21,5 +21,9 @@ export const SocialService = {
     like : async  (id) =>{
         const response = await request("POST",`/project/like/${id}`,{});
         return response.data
+    },
+    comment: async(data) =>{
+        const response = await request("POST","/project/add/comment",data);
+        return response.data
     }
 };

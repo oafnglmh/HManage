@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(true);
         localStorage.setItem("token", token);
         localStorage.setItem("userId", token.userId);
+        localStorage.setItem("userName", `${token.first_name} ${token.last_name}`);
     };
     
     const logout = () => {

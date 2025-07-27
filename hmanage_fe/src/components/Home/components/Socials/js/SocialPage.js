@@ -4,7 +4,9 @@ import { SocialService } from "../Services/SocialService";
 import Popup from "../../../../Notification/js/Popup";
 import { FaBell, FaComment, FaEdit, FaHeart, FaHome } from "react-icons/fa";
 import { FaDeleteLeft } from "react-icons/fa6";
-
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import { emojiListIcon } from '../js/emoiji';
 const fakeAvatar = "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png";
 
 function SocialPage() {
@@ -18,34 +20,53 @@ function SocialPage() {
   const [showModal, setShowModal] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [menuOpenPostId, setMenuOpenPostId] = useState(null);
+  const localUser = localStorage.getItem("userName");
   const contacts = [
   { id: 1, name: "Lê Minh Hoàng", avatar: fakeAvatar },
   { id: 2, name: "Nguyễn Thị Mai", avatar: fakeAvatar },
   { id: 3, name: "Trần Văn B", avatar: fakeAvatar },
 ];
-  const emojiList = [
-    "😀", "😃", "😄", "😁", "😆", "😂", "🤣", "🥲", "😊", "😇", "🙂", "🙃", "😉", "😌",
-    
-    "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😜", "🤪", "😝", "🤑",
-
-    "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😭", "😢", "😤", "😠", "😡",
-
-    "🤔", "🤨", "😐", "😑", "😶", "😶‍🌫️", "😳", "🥵", "🥶", "😱", "😨", "😰",
-
-    "👍", "👎", "👏", "🙌", "👐", "🤝", "🙏", "🤲", "💪", "👋", "🤘", "✌️", "🤟", "☝️", "✋", "🖐️",
-
-    "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "❣️",
-
-    "🎉", "🎊", "🎈", "🎁", "🎂", "🍰", "🧁", "🍕", "🍔", "🍟", "🍣", "🍜", "🥤",
-
-    "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁",
-
-    "☀️", "🌤️", "⛅", "🌧️", "⛈️", "❄️", "🌈", "🔥", "💧", "🌊", "🌪️"
-  ];
+  const emojiList = emojiListIcon
 
   useEffect(() => {
     fetchData();
+
+    const socket = new SockJS("http://localhost:8080/ws");
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        onConnect: () => {
+
+          SocialService.getAll().then((data) => {
+            data.forEach((post) => {
+              if (post.projectId) {
+                stompClient.subscribe(`/topic/project/${post.projectId}`, (message) => {
+                  const newComment = JSON.parse(message.body);
+                  const commentItem = {
+                  id: newComment.commentId,
+                  user: newComment.userName,
+                  content: newComment.text,
+                  avatar: newComment.avatar || fakeAvatar,
+                  createdAt: "vừa xong",
+                };
+
+                  setComments((prev) => ({
+                    ...prev,
+                    [post.projectId]: [...(prev[post.projectId] || []), commentItem],
+                  }));
+                });
+              }
+            });
+          });
+        },
+      });
+
+      stompClient.activate();
+
+      return () => {
+        stompClient.deactivate();
+      };
   }, []);
+
   const toggleLike = (postId, post) => {
     const userId = localStorage.getItem("userId");
 
@@ -75,28 +96,48 @@ function SocialPage() {
 
   const openCommentModal = (post) => {
     setSelectedPost(post);
-    if (!comments[post.id]) {
+    if (!comments[post.projectId]) {
+      const realComments = (post.o_Comments || []).map((c) => ({
+        id: c.commentId,
+        user: c.userName,
+        content: c.text,
+        avatar: post.avatar || "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png",
+        createdAt: convertTimestamp(c.createdAt),
+      }));
+
       setComments((prev) => ({
         ...prev,
-        [post.id]: [
-          { id: 1, user: "Mai", content: "Bài đăng hay quá!" ,avatar: "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png",date: "vừa xong"},
-          { id: 2, user: "Hoàng", content: "Tuyệt vời luôn 😍",avatar: "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png",date: "vừa xong" },
-        ],
+        [post.projectId]: realComments,
       }));
     }
   };
 
-  const addComment = () => {
+  const convertTimestamp = (timestamp) => {
+  if (!timestamp) return "vừa xong";
+  const date = new Date(timestamp);
+  return date.toLocaleString("vi-VN");
+};
+
+  const addComment = (post) => {
     if (!commentInput.trim()) return;
+
+
     setComments((prev) => ({
       ...prev,
-      [selectedPost.id]: [
-        ...(prev[selectedPost.id] || []),
-        { id: Date.now(), user: "Bạn", content: commentInput },
-      ],
+      [post.projectId]: [...(prev[post.projectId] || [])],
     }));
+
+    const data = {
+      createdAt: Date.now(),
+      projectId: post.projectId,
+      text: commentInput,
+    };
+
+    SocialService.comment(data);
     setCommentInput("");
   };
+
+
 
   const handleEditPost = (post) => {
     setShowModal(true);
@@ -455,18 +496,19 @@ function SocialPage() {
             <h3 style={{ marginBottom: 10 }}>Bình luận bài đăng</h3>
 
             <div className="cmt-list">
-              {(comments[selectedPost.id] || []).map((cmt) => (
+              {(comments[selectedPost.projectId] || []).map((cmt) => (
                 <div key={cmt.id} className="cmt-item animate-fade-in">
                   <img src={cmt.avatar} alt="avatar" className="cmt-avatar" />
                   <div className="cmt-content">
                     <div className="cmt-header">
                       <span className="cmt-user">{cmt.user}</span>
-                      <span className="cmt-date">{cmt.date}</span>
+                      <span className="cmt-date">{cmt.createdAt}</span>
                     </div>
                     <div className="cmt-text">{cmt.content}</div>
                   </div>
                 </div>
               ))}
+
             </div>
 
             <div className="cmt-input-section">
@@ -476,6 +518,9 @@ function SocialPage() {
                 onChange={(e) => setCommentInput(e.target.value)}
                 placeholder="Viết bình luận..."
               />
+
+              <input type="hidden" value={localUser} />
+
 
               <div className="emoji-section">
                 <button
@@ -502,7 +547,8 @@ function SocialPage() {
             </div>
 
             <div className="mdl-act">
-              <button onClick={addComment}>Gửi</button>
+              <button onClick={() => addComment(selectedPost)}>Gửi</button>
+
               <button onClick={() => setSelectedPost(null)}>Đóng</button>
             </div>
           </div>
