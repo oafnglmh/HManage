@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/Auth/js/ProtectedRoute";
 import Main from "./components/Home/components/home/js/main";
 import UserPage from "./components/Home/components/Users/js/UserPage"
 import SocialPage from "./components/Home/components/Socials/js/SocialPage"
+import MessagePage from "./components/Home/components/Socials/message/js/MessagePage"
 function App() {
   return (
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="questions" element={<QuestionSetList />} />
             <Route path="users" element={<UserPage/>}/>
             <Route path="socials" element={<SocialPage/>}/>
+            <Route path="message" element={<MessagePage/>}/>
           </Route>
         </Route>
       </Routes>

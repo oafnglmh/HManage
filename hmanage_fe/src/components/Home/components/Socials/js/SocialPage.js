@@ -3,10 +3,11 @@ import "../css/Social.css";
 import { SocialService } from "../Services/SocialService";
 import Popup from "../../../../Notification/js/Popup";
 import { FaBell, FaComment, FaEdit, FaHeart, FaHome } from "react-icons/fa";
-import { FaDeleteLeft } from "react-icons/fa6";
+import { FaDeleteLeft, FaMessage } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { emojiListIcon } from '../js/emoiji';
+import { useNavigate } from "react-router-dom";
 const fakeAvatar = "https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png";
 
 function SocialPage() {
@@ -175,7 +176,7 @@ function SocialPage() {
   };
 
   const closePopup = () => setPopup(null);
-
+  const navigate = useNavigate();
   const handlePost = async () => {
     if (!newPost.content && newPost.files.length === 0) return;
 
@@ -273,6 +274,10 @@ function SocialPage() {
             <li className="menu-item">
               <FaBell className="menu-icon" />
               <span className="menu-text">Thông báo</span>
+            </li>
+            <li className="menu-item">
+              <FaMessage className="menu-icon" onClick={() => navigate("/message")}/>
+              <span className="menu-text">Tin nhắn</span>
             </li>
           </ul>
         </div>

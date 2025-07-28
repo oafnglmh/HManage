@@ -1,0 +1,519 @@
+:root {
+    --primary: #0088cc;
+    --primary-light: #e1f5fe;
+    --secondary: #005b96;
+    --dark: #263238;
+    --light: #f5f7fa;
+    --gray: #cfd8dc;
+    --text-dark: #263238;
+    --text-light: #607d8b;
+    --success: #4caf50;
+    --online: #4caf50;
+    --offline: #b0bec5;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
+.web-messenger {
+    width: 100%;
+    max-width: 1200px;
+    height: 90vh;
+    background-color: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    box-shadow: var(--box-shadow);
+    position: relative;
+}
+.chat-sidebar {
+    width: 350px;
+    background-color: white;
+    border-right: 1px solid var(--gray);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+}
+.icon {
+    font-size: 18px;
+    color: #555;
+    cursor: pointer;
+}
+
+/* Header sidebar */
+.sidebar-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary);
+    color: white;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-name {
+    font-weight: 600;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.sidebar-actions i {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition);
+    font-size: 16px;
+}
+
+.sidebar-actions i:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Thanh tìm kiếm */
+.search-bar {
+    padding: 15px;
+    position: relative;
+    border-bottom: 1px solid var(--gray);
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid var(--gray);
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+    transition: var(--transition);
+    background-color: #f5f7fa;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+}
+
+/* Danh sách chat */
+.chat-list {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--gray);
+}
+
+.chat-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-list::-webkit-scrollbar-track {
+    background: var(--gray);
+}
+
+.chat-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 3px;
+}
+
+/* Item chat */
+.chat-item {
+    display: flex;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid #eceff1;
+    position: relative;
+}
+
+.chat-item:hover {
+    background-color: #f5f7fa;
+}
+
+.chat-item.active {
+    background-color: var(--primary-light);
+}
+
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid var(--gray);
+}
+
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.chat-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.message-preview {
+    font-size: 13px;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unread-badge {
+    background-color: var(--primary);
+    color: white;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+}
+
+/* Khu vực chat chính */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f7fa;
+    position: relative;
+}
+
+/* Chat header */
+.chat-header {
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid var(--gray);
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+.chat-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid var(--gray);
+}
+
+.chat-user-info {
+    flex: 1;
+}
+
+.chat-user-name {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.chat-user-status {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.chat-user-status.online {
+    color: var(--online);
+}
+
+.chat-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.chat-actions i {
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition);
+    font-size: 18px;
+}
+
+.chat-actions i:hover {
+    color: var(--primary);
+}
+
+/* Khu vực tin nhắn */
+.messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-image: url('https://sdmntprwestus3.oaiusercontent.com/files/00000000-afa0-61fd-b71f-9cb53efb39f3/raw?se=2025-07-28T02%3A19%3A11Z&sp=r&sv=2024-08-04&sr=b&scid=f82c29d9-4fb5-51cb-ae07-f54a54b752e0&skoid=71e8fa5c-90a9-4c17-827b-14c3005164d6&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-07-27T19%3A17%3A02Z&ske=2025-07-28T19%3A17%3A02Z&sks=b&skv=2024-08-04&sig=QF9gHYE1wgOiOCpA8kUutWX7oe9dkDCwbMLYs4USC3Y%3D');
+    background-size: contain;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tin nhắn */
+.message {
+    margin-bottom: 15px;
+    max-width: 70%;
+    display: flex;
+    flex-direction: column;
+    animation: messageAppear 0.3s ease forwards;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tin nhắn đến */
+.incoming {
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.incoming .message-content {
+    background-color: white;
+    color: var(--text-dark);
+    border-radius: 0 var(--border-radius) var(--border-radius) var(--border-radius);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Tin nhắn gửi đi */
+.outgoing {
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.outgoing .message-content {
+    background-color: var(--primary);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 var(--border-radius);
+}
+
+.message-content {
+    padding: 10px 15px;
+    position: relative;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.message-time {
+    font-size: 11px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.incoming .message-time {
+    color: var(--text-light);
+}
+
+.outgoing .message-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.message-status {
+    margin-left: 5px;
+}
+
+/* Chỉ báo đang nhập */
+.typing-indicator {
+    display: flex;
+    background-color: white;
+    border-radius: 18px;
+    padding: 8px 12px;
+    width: fit-content;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-light);
+    border-radius: 50%;
+    margin: 0 2px;
+    opacity: 0.4;
+    animation: typingPulse 1.2s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+    0%, 100% {
+        opacity: 0.4;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+
+/* Khu vực nhập tin nhắn */
+.message-input-container {
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid var(--gray);
+    display: flex;
+    align-items: center;
+}
+
+.input-tools {
+    display: flex;
+    gap: 12px;
+    margin-right: 15px;
+}
+
+.input-tools i {
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition);
+    font-size: 20px;
+}
+
+.input-tools i:hover {
+    color: var(--primary);
+}
+
+.message-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--gray);
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+    resize: none;
+    max-height: 120px;
+    transition: var(--transition);
+}
+
+.message-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
+}
+
+.send-button {
+    margin-left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.send-button:hover {
+    background-color: var(--secondary);
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .web-messenger {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .chat-sidebar {
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 10;
+        transform: translateX(0);
+    }
+
+    .chat-sidebar.hidden {
+        transform: translateX(-100%);
+    }
+
+    .chat-area {
+        width: 100%;
+        display: none;
+    }
+
+    .chat-area.active {
+        display: flex;
+    }
+
+    .back-button {
+        display: block;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+}
