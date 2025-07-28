@@ -2,16 +2,13 @@ package com.hmanage.hmanage_be.Controller;
 
 import com.hmanage.hmanage_be.Service.UserService;
 import com.hmanage.hmanage_be.config.UserAuthProvider;
-import com.hmanage.hmanage_be.dto.CredentialsDto;
-import com.hmanage.hmanage_be.dto.SignUpDto;
-import com.hmanage.hmanage_be.dto.UserDto;
+import com.hmanage.hmanage_be.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,5 +27,11 @@ public class AuthController {
         user.setToken(userAuthProvider.createToken(user.getUsername()));
         return ResponseEntity.created(URI.create("/users/"+user.getUserId()))
                     .body(user);
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<UserInfoDto>> getUserById(@PathVariable Long id){
+        List<UserInfoDto> inf = userService.getById(id);
+        return ResponseEntity.ok(inf);
     }
 }
