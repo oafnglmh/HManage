@@ -54,9 +54,10 @@ public class QuestionController {
     }
 
     @GetMapping("/social")
-    public ResponseEntity<List<QuestionDto>> getAllSns() {
-        List<QuestionDto> questions = questionService.getAllSns();
-        return ResponseEntity.ok(questions);
+    public ResponseEntity<List<QuestionDto>> getAllSns(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(questionService.getAllSns(page, size));
     }
 
     @PostMapping("/project/like/{id}")

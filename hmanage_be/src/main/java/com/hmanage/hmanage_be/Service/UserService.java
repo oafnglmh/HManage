@@ -170,6 +170,38 @@ public class UserService {
         return result;
     }
 
+    public List<UserInfoDto> getAll() {
+        List<Object[]> data = userRepository.findAllUser();
+        Map<Long, UserInfoDto> userMap = new HashMap<>();
+
+        for (Object[] row : data) {
+            User user = (User) row[0];
+            Document document = (Document) row[1];
+
+            UserInfoDto dto = userMap.get(user.getUserId());
+            if (dto == null) {
+                UserInfoDto.UserInfoDtoBuilder builder = UserInfoDto.builder()
+                        .userId(user.getUserId())
+                        .firstName(user.getFirst_name())
+                        .lastName(user.getLast_name())
+                        .fullName(
+                                (user.getFirst_name() != null ? user.getFirst_name() : "") + " " +
+                                        (user.getLast_name() != null ? user.getLast_name() : "")
+                        )
+                        .email(user.getEmail());
+
+                if (document != null && document.getFilePath() != null) {
+                    builder.images(document.getFilePath());
+                }
+
+                dto = builder.build();
+                userMap.put(user.getUserId(), dto);
+            }
+        }
+
+        return new ArrayList<>(userMap.values());
+    }
+
 
 
 

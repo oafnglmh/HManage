@@ -7,6 +7,8 @@ import com.hmanage.hmanage_be.dto.*;
 import com.hmanage.hmanage_be.models.*;
 import com.hmanage.hmanage_be.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 
 @RequiredArgsConstructor
 @Service
@@ -341,8 +346,9 @@ public class QuestionService {
     }
 
 
-    public List<QuestionDto> getAllSns() {
-        List<Object[]> data = questionRepository.findAllSnsProjects();
+    public List<QuestionDto> getAllSns(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Object[]> data = questionRepository.findAllSnsProjects(pageable);
         Map<Long, QuestionDto> dtoMap = new LinkedHashMap<>();
 
         for (Object[] row : data) {

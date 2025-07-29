@@ -3,6 +3,8 @@ package com.hmanage.hmanage_be.repositories;
 import com.hmanage.hmanage_be.models.Favourite;
 import com.hmanage.hmanage_be.models.Project;
 import com.hmanage.hmanage_be.models.User;
+import org.hibernate.query.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,15 +21,17 @@ public interface QuestionRepository extends JpaRepository<Project, Long> {
     List<Object[]> findProjectWithUserById(Long id);
 
     @Query("""
-        SELECT p, d1, u, d2, f
-        FROM Project p 
-        LEFT JOIN Document d1 ON p.projectId = d1.projectId 
-        LEFT JOIN User u ON p.userId = u.userId 
-        LEFT JOIN Document d2 ON u.userId = d2.userId 
-        LEFT JOIN Favourite f ON p.projectId = f.projectId
-        WHERE p.code LIKE 'SNS-%' AND p.status = '20'
-    """)
-    List<Object[]> findAllSnsProjects();
+    SELECT p, d1, u, d2, f
+    FROM Project p 
+    LEFT JOIN Document d1 ON p.projectId = d1.projectId 
+    LEFT JOIN User u ON p.userId = u.userId 
+    LEFT JOIN Document d2 ON u.userId = d2.userId 
+    LEFT JOIN Favourite f ON p.projectId = f.projectId
+    WHERE p.code LIKE 'SNS-%' AND p.status = '20'
+""")
+    List<Object[]> findAllSnsProjects(Pageable pageable);
+
+
 
     @Query("""
         SELECT c, u 

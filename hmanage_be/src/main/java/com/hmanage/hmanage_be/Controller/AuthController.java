@@ -34,4 +34,10 @@ public class AuthController {
         List<UserInfoDto> inf = userService.getById(id);
         return ResponseEntity.ok(inf);
     }
+
+    @GetMapping("/user/getAll")
+    public ResponseEntity<List<UserInfoDto>> getAll(){
+        List<UserInfoDto> inf = userService.getAll();
+        return ResponseEntity.ok(inf);
+    }
 }
