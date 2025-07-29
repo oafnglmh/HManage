@@ -5,6 +5,7 @@ import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognitio
 import { useNavigate } from "react-router-dom";
 
 function HomePage() {
+    const userId = localStorage.getItem("userId");
     const { transcript, listening, resetTranscript } = useSpeechRecognition();
     const navigate = useNavigate();
     useEffect(() => {
@@ -15,7 +16,7 @@ function HomePage() {
             navigate("/socials");
         }
         if (transcript.includes("trang cá nhân")) {
-            navigate("/users");
+            navigate(`/users/${userId}`);
         }
     }, [transcript]);
     const handleMicClick = () => {

@@ -18,7 +18,7 @@ function App() {
           <Route path="/" element={<HomePage />}>
             <Route path="home" element={<Main/>} />
             <Route path="questions" element={<QuestionSetList />} />
-            <Route path="users" element={<UserPage/>}/>
+            <Route path="users/:id" element={<UserPage />} />
             <Route path="socials" element={<SocialPage/>}/>
             <Route path="message" element={<MessagePage/>}/>
           </Route>

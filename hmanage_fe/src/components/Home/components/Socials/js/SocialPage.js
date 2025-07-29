@@ -26,23 +26,62 @@ function SocialPage() {
   { id: 1, name: "Lê Minh Hoàng", avatar: fakeAvatar },
   { id: 2, name: "Nguyễn Thị Mai", avatar: fakeAvatar },
   { id: 3, name: "Trần Văn B", avatar: fakeAvatar },
-];
+  ];
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   const emojiList = emojiListIcon
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isLoading || !hasMore) return;
+
+      setIsLoading(true);
+      try {
+        const data = await SocialService.getAll(page);
+        if (data.length === 0) {
+          setHasMore(false);
+        } else {
+          setPosts((prev) => [...prev, ...data]);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, hasMore]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const sentinel = document.querySelector("#scroll-sentinel");
+    if (sentinel) observer.observe(sentinel);
+
+    return () => {
+      if (sentinel) observer.unobserve(sentinel);
+    };
+  }, [hasMore, isLoading]);
 
   useEffect(() => {
-    fetchData();
-
     const socket = new SockJS("http://localhost:8080/ws");
-      const stompClient = new Client({
-        webSocketFactory: () => socket,
-        onConnect: () => {
-
-          SocialService.getAll().then((data) => {
-            data.forEach((post) => {
-              if (post.projectId) {
-                stompClient.subscribe(`/topic/project/${post.projectId}`, (message) => {
-                  const newComment = JSON.parse(message.body);
-                  const commentItem = {
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        SocialService.getAll().then((data) => {
+          data.forEach((post) => {
+            if (post.projectId) {
+              stompClient.subscribe(`/topic/project/${post.projectId}`, (message) => {
+                const newComment = JSON.parse(message.body);
+                const commentItem = {
                   id: newComment.commentId,
                   user: newComment.userName,
                   content: newComment.text,
@@ -50,24 +89,23 @@ function SocialPage() {
                   createdAt: "vừa xong",
                 };
 
-                  setComments((prev) => ({
-                    ...prev,
-                    [post.projectId]: [...(prev[post.projectId] || []), commentItem],
-                  }));
-                });
-              }
-            });
+                setComments((prev) => ({
+                  ...prev,
+                  [post.projectId]: [...(prev[post.projectId] || []), commentItem],
+                }));
+              });
+            }
           });
-        },
-      });
+        });
+      },
+    });
 
-      stompClient.activate();
+    stompClient.activate();
 
-      return () => {
-        stompClient.deactivate();
-      };
+    return () => {
+      stompClient.deactivate();
+    };
   }, []);
-
   const toggleLike = (postId, post) => {
     const userId = localStorage.getItem("userId");
 
@@ -165,15 +203,24 @@ function SocialPage() {
 
 
   const fetchData = async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
     try {
-      const data = await SocialService.getAll();
-      setPosts(data);
-      setLikes({});
-      console.log("data when get", data);
+      const data = await SocialService.getAll(page);
+      if (data.length === 0) {
+        setHasMore(false);
+      } else {
+        setPosts((prev) => [...prev, ...data]);
+        setPage((prev) => prev + 1);
+      }
     } catch (error) {
       console.error("Lỗi khi tải danh sách:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
 
   const closePopup = () => setPopup(null);
   const navigate = useNavigate();
@@ -468,6 +515,8 @@ function SocialPage() {
                 </div>
               );
             })}
+            {isLoading && <div>Đang tải thêm...</div>}
+            <div id="scroll-sentinel" style={{ height: 1 }}></div>
         </div>
         {popup && (
           <Popup

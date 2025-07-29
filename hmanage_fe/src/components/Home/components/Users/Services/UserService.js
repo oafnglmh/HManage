@@ -16,5 +16,9 @@ export const UserService = {
     comment: async(data) =>{
         const response = await request("POST","/project/add/comment",data);
         return response.data
+    },
+    getAll: async() =>{
+        const response = await request("GET","/user/getAll",{});
+        return response.data
     }
 };

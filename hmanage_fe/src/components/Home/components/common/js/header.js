@@ -5,7 +5,7 @@ import { FaGlobe, FaHome, FaQuestionCircle, FaUser } from "react-icons/fa";
 
 const Header = () => {
     const { pathname } = useLocation();
-
+    const userId = localStorage.getItem("userId");
     const getNavItemClass = (path) => {
         return `nav-item${pathname === path ? ' active' : ''}`;
     };
@@ -25,10 +25,14 @@ const Header = () => {
                     <FaGlobe className="icon" />
                     <span className="label">Mạng xã hội</span>
                 </Link>
-                <Link to="/users" className={getNavItemClass('/users')}>
+                <Link
+                    to={`/users/${userId}`} 
+                    className={getNavItemClass(`/users/${userId}`)}
+                    >
                     <FaUser className="icon" />
                     <span className="label">Tài khoản</span>
                 </Link>
+
             </nav>
         </header>
     );

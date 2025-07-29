@@ -1,10 +1,11 @@
 import { request, setAuthToken } from "../../../../../helper/axios_helper";
 
 export const SocialService = {
-    getAll: async () => {
-        const response = await request("GET", "/social", {});
+    getAll: async (page = 0, size = 10) => {
+        const response = await request("GET", `/social?page=${page}&size=${size}`, {});
         return response.data;
     },
+
 
     add: async (questionPayload) => {
         const response = await request("POST", "/question/add", questionPayload);
