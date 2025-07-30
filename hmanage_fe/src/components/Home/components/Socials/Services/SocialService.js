@@ -26,5 +26,9 @@ export const SocialService = {
     comment: async(data) =>{
         const response = await request("POST","/project/add/comment",data);
         return response.data
-    }
+    },
+    getNoti : async (page = 0, size = 10) => {
+        const response = await request("GET", `/notification?page=${page}&size=${size}`, {});
+        return response.data;
+    },
 };

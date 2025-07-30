@@ -1,0 +1,94 @@
+.notification-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.noti-title {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.notification-item {
+  background: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transform: translateY(10px);
+  opacity: 0;
+  animation: slideFadeIn 0.5s ease-out forwards;
+}
+
+.notification-item.unread {
+  border-left: 5px solid #1890ff;
+  background-color: #f0faff;
+}
+
+.notification-message {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.noti-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-accept {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-decline {
+  background: #f44336;
+  color: white;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+}
+
+/* Animations */
+@keyframes slideFadeIn {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

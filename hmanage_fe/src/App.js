@@ -8,6 +8,7 @@ import Main from "./components/Home/components/home/js/main";
 import UserPage from "./components/Home/components/Users/js/UserPage"
 import SocialPage from "./components/Home/components/Socials/js/SocialPage"
 import MessagePage from "./components/Home/components/Socials/message/js/MessagePage"
+import NotificationPage from "./components/Home/components/Socials/Notification/js/notificationPage"
 function App() {
   return (
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="users/:id" element={<UserPage />} />
             <Route path="socials" element={<SocialPage/>}/>
             <Route path="message" element={<MessagePage/>}/>
+            <Route path="notification" element={<NotificationPage/>}/>
           </Route>
         </Route>
       </Routes>

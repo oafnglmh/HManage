@@ -20,5 +20,9 @@ export const UserService = {
     getAll: async() =>{
         const response = await request("GET","/user/getAll",{});
         return response.data
+    },
+    friend: async(data)=>{
+        const response = await request("POST","/friend/add",data);
+        return response.data
     }
 };

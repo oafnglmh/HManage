@@ -9,13 +9,15 @@ import {
     FaTimes,
     FaEdit,
     FaSignOutAlt,
-    FaEllipsisV
+    FaEllipsisV,
+    FaUserClock
 } from 'react-icons/fa';
 import '../css/UserPage.css';
 import { UserService } from '../Services/UserService';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserSearchMenu from './UserSearchMenu';
 import { useParams } from 'react-router-dom';
+import Popup from "../../../../Notification/js/Popup";
 function formatDate(timestamp) {
     const date = new Date(timestamp);
     return date.toLocaleDateString('vi-VN');
@@ -29,7 +31,8 @@ function UserProfile() {
     const [commentPopup, setCommentPopup] = useState({ open: false, project: null });
     const [newComment, setNewComment] = useState('');
     const [userAll, setUserAll] = useState(null);
-    
+    const [popup, setPopup] = useState(null);
+    const closePopup = () => setPopup(null);
     useEffect(() => {
         fetchData();
     }, [userIdParam]);
@@ -86,6 +89,15 @@ function UserProfile() {
         setNewComment('');
     };
 
+    const handleAddFriend =async (idUser) =>{
+        const data = {
+            user02 : idUser
+        }
+        await UserService.friend(data);
+        setPopup({ type: "success", message: "Đã gửi lời mời kết bạn" });
+        fetchData();
+    }
+
     const handleCommentSubmit = () => {
         if (!newComment.trim()) return;
         const newCommentObj = {
@@ -133,10 +145,27 @@ function UserProfile() {
                         <div className="profile-actions_user">
                             {userInfo.userId !== userId && (
                                 <>
-                                    <button className="btn_user follow_user">
+                                    {userInfo.statusFriend === null && (
+                                    <button
+                                        onClick={() => handleAddFriend(userInfo.userId)}
+                                        className="btn_user follow_user"
+                                    >
                                         <FaUserPlus /> Theo dõi
                                         <div className="birds">🐦🐦🐦</div>
                                     </button>
+                                    )}
+
+                                    {userInfo.statusFriend === 0 && (
+                                    <button className="btn_user sent_request" disabled>
+                                        <FaUserClock /> Đã gửi lời mời
+                                    </button>
+                                    )}
+
+                                    {userInfo.statusFriend === 1 && (
+                                    <button className="btn_user friends_user" disabled>
+                                        <FaUserFriends /> Bạn bè
+                                    </button>
+                                    )}
 
                                     <button className="fire-hover">
                                         <FaEnvelope /> Nhắn tin
@@ -274,6 +303,13 @@ function UserProfile() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+                {popup && (
+                    <Popup
+                    type={popup.type}
+                    message={popup.message}
+                    onClose={closePopup}
+                    />
+                )}
             </div></>
     );
 }

@@ -22,6 +22,8 @@ function SocialPage() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [menuOpenPostId, setMenuOpenPostId] = useState(null);
   const localUser = localStorage.getItem("userName");
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
   const contacts = [
   { id: 1, name: "Lê Minh Hoàng", avatar: fakeAvatar },
   { id: 2, name: "Nguyễn Thị Mai", avatar: fakeAvatar },
@@ -44,6 +46,12 @@ function SocialPage() {
         } else {
           setPosts((prev) => [...prev, ...data]);
         }
+        const notication = await SocialService.getNoti(page);
+        const notifications = await SocialService.getNoti(page);
+        console.log("data notification", notifications);
+
+        const unreadCount = notifications.filter((n) => n.status === 0).length;
+        setUnreadNotifications(unreadCount);
       } catch (error) {
         console.error("Lỗi khi tải danh sách:", error);
       } finally {
@@ -318,10 +326,14 @@ function SocialPage() {
               <FaHome className="menu-icon" />
               <span className="menu-text">Trang chủ</span>
             </li>
-            <li className="menu-item">
-              <FaBell className="menu-icon" />
+            <li className="menu-item notification-item">
+              <FaBell onClick={() => navigate("/notification")} className="menu-icon" />
+              {unreadNotifications > 0 && (
+                <span className="notification-badge">{unreadNotifications}</span>
+              )}
               <span className="menu-text">Thông báo</span>
             </li>
+
             <li className="menu-item">
               <FaMessage className="menu-icon" onClick={() => navigate("/message")}/>
               <span className="menu-text">Tin nhắn</span>
