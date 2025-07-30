@@ -1,5 +1,6 @@
 package com.hmanage.hmanage_be.repositories;
 
+import com.hmanage.hmanage_be.models.Friends;
 import com.hmanage.hmanage_be.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,5 +35,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
         LEFT JOIN Document d ON u.userId = d.userId
     """)
     List<Object[]> findAllUser();
+
+    @Query("""
+        SELECT f
+        FROM Friends f
+        WHERE (f.user01 = :id AND f.user02 = :idUser) 
+           OR (f.user01 = :idUser AND f.user02 = :id)
+    """)
+    List<Friends> checkStatusFriend(Long id, Long idUser);
 
 }

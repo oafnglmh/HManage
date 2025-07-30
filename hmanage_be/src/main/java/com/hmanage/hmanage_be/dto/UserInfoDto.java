@@ -24,5 +24,5 @@ public class UserInfoDto {
     private List<QuestionDto> O_Project;
     private List<String> userLikeId;
     private List<CommentDto> O_Comments;
-
+    private Integer statusFriend;
 }

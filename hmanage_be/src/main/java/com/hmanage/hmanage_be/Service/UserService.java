@@ -10,6 +10,8 @@ import com.hmanage.hmanage_be.repositories.QuestionRepository;
 import com.hmanage.hmanage_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +89,6 @@ public class UserService {
         dto.setEmail(us.getEmail());
         dto.setImages(d != null ? d.getFilePath() : null);
 
-        // ----- Xử lý Project, Image, Favourite -----
         List<Object[]> data02 = userRepository.findUserInfPrj(id);
         Map<Long, QuestionDto> dtoMap = new LinkedHashMap<>();
 
@@ -135,7 +136,6 @@ public class UserService {
             dtoMap.put(projectId, dto01);
         }
 
-        // ----- Xử lý Comment -----
         List<Long> projectIds = new ArrayList<>(dtoMap.keySet());
         if (!projectIds.isEmpty()) {
             List<Object[]> commentData = questionRepository.findCommentsByProjectIds(projectIds);
@@ -165,6 +165,16 @@ public class UserService {
         }
 
         dto.setO_Project(new ArrayList<>(dtoMap.values()));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto dtoUser = (UserDto) authentication.getPrincipal();
+        if (dtoUser != null && dtoUser.getUserId() != id) {
+            List<Friends> data03 = userRepository.checkStatusFriend(id, dtoUser.getUserId());
+            if(data03 != null && data03.size() > 0) {
+                dto.setStatusFriend(data03.get(0).getStatus());
+            }
+        }
+
         result.add(dto);
 
         return result;

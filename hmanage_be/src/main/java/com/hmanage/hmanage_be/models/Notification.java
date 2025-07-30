@@ -7,55 +7,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "Notification")
+@Getter
+@Setter
 public class Notification {
     @Id
     private Long  notificationId;
 
-    private Long  userId;
-    private String message;
-    private Boolean isRead;
-    private Timestamp sentAt;
-
-    public Long  getNotificationId() {
-        return notificationId;
-    }
-
-    public void setNotificationId(Long  notificationId) {
-        this.notificationId = notificationId;
-    }
-
-    public Long  getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long  userId) {
-        this.userId = userId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Boolean getIsRead() {
-        return isRead;
-    }
-
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    public Timestamp getSentAt() {
-        return sentAt;
-    }
-
-    public void setSentAt(Timestamp sentAt) {
-        this.sentAt = sentAt;
-    }
+    private Long  user01;
+    private Long  user02;
+    private Integer status;
+    private Integer type;
+    private Long  parentId;
 }

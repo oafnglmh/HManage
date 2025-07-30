@@ -60,4 +60,7 @@ public class ModelConstants {
 
     // comment model constant
     public static final Integer COMMENT         = 1019;
+
+    // Friend model constant
+    public static final Integer FRIEND          = 1020;
 }
