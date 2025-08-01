@@ -1,7 +1,7 @@
 import React from "react";
 import "../css/same.css";
 import { Link, useLocation } from "react-router-dom";
-import { FaGlobe, FaHome, FaQuestionCircle, FaUser } from "react-icons/fa";
+import { FaGlobe, FaHome, FaLandmark, FaQuestionCircle, FaUser } from "react-icons/fa";
 
 const Header = () => {
     const { pathname } = useLocation();
@@ -24,6 +24,10 @@ const Header = () => {
                 <Link to="/socials" className={getNavItemClass('/socials')}>
                     <FaGlobe className="icon" />
                     <span className="label">Mạng xã hội</span>
+                </Link>
+                <Link to="/isLand" className={getNavItemClass('/isLand')}>
+                    <FaLandmark className="icon" />
+                    <span className="label">Đảo kí ức</span>
                 </Link>
                 <Link
                     to={`/users/${userId}`} 
