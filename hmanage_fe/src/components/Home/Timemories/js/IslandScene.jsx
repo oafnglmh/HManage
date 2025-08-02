@@ -3,37 +3,38 @@ import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Sky, PointerLockControls } from "@react-three/drei";
 import * as THREE from "three";
 
-function WallPhoto({ position, rotation, photo, onClick }) {
+/* ---------- Component treo tranh ---------- */
+function WallPhoto({ position, rotation, photo }) {
   const texture = useLoader(THREE.TextureLoader, photo.url);
-
   return (
-    <mesh
-      position={position}
-      rotation={rotation}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick(photo);
-      }}
-    >
+    <mesh position={position} rotation={rotation}>
       <planeGeometry args={[3, 2]} />
       <meshBasicMaterial map={texture} />
     </mesh>
   );
 }
 
-function Player() {
+/* ---------- Player điều khiển bằng W A S D ---------- */
+function Player({ onPositionUpdate, resetSignal, roomWidth }) {
   const playerRef = useRef();
   const { camera } = useThree();
   const speed = 0.1;
   const keys = useRef({});
 
+  const boundary = roomWidth / 2 - 0.5;
+
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.position.set(0, 0.5, 8);
+      camera.position.set(0, 2, 8);
+    }
+  }, [resetSignal, camera]);
+
   useEffect(() => {
     const handleKeyDown = (e) => (keys.current[e.key.toLowerCase()] = true);
     const handleKeyUp = (e) => (keys.current[e.key.toLowerCase()] = false);
-
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
@@ -46,7 +47,6 @@ function Player() {
 
     const direction = new THREE.Vector3();
     camera.getWorldDirection(direction);
-
     const forward = new THREE.Vector3(direction.x, 0, direction.z).normalize();
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
 
@@ -55,7 +55,12 @@ function Player() {
     if (keys.current["a"]) obj.position.addScaledVector(right, speed);
     if (keys.current["d"]) obj.position.addScaledVector(right, -speed);
 
+    // Giới hạn trong phòng
+    obj.position.x = Math.max(-boundary, Math.min(boundary, obj.position.x));
+    obj.position.z = Math.max(-boundary, Math.min(boundary, obj.position.z));
+
     camera.position.set(obj.position.x, obj.position.y + 1.5, obj.position.z);
+    onPositionUpdate(obj.position.clone());
   });
 
   return (
@@ -66,13 +71,17 @@ function Player() {
   );
 }
 
+/* ---------- Phòng ---------- */
 function Room({ width = 20, height = 5 }) {
   return (
     <>
+      {/* Sàn */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[width, width]} />
         <meshStandardMaterial color="#555" />
       </mesh>
+
+      {/* 4 tường */}
       <mesh position={[0, height / 2, -width / 2]}>
         <planeGeometry args={[width, height]} />
         <meshStandardMaterial color="#888" />
@@ -89,56 +98,157 @@ function Room({ width = 20, height = 5 }) {
         <planeGeometry args={[width, height]} />
         <meshStandardMaterial color="#888" />
       </mesh>
+
+      {/* Mái nhà */}
+      <mesh position={[0, height, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[width, width]} />
+        <meshStandardMaterial color="#444" />
+      </mesh>
     </>
   );
 }
 
-export default function GalleryFPS() {
-  const [photos, setPhotos] = useState([]);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
+function PaintingPlayer({ onExit }) {
+  const speed = 1;
+  const keys = useRef({});
+  const { camera } = useThree();
+  const playerRef = useRef();
+
+  useEffect(() => {
+    const handleExit = (e) => {
+      if (e.key.toLowerCase() === "e") onExit();
+    };
+    const handleKeyDown = (e) => (keys.current[e.key.toLowerCase()] = true);
+    const handleKeyUp = (e) => (keys.current[e.key.toLowerCase()] = false);
+
+    window.addEventListener("keydown", handleExit);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleExit);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [onExit]);
+
+  useFrame(() => {
+    const obj = playerRef.current;
+    if (!obj) return;
+
+    const direction = new THREE.Vector3();
+    camera.getWorldDirection(direction);
+    const forward = new THREE.Vector3(direction.x, 0, direction.z).normalize();
+    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+
+    if (keys.current["w"]) obj.position.addScaledVector(forward, speed);
+    if (keys.current["s"]) obj.position.addScaledVector(forward, -speed);
+    if (keys.current["a"]) obj.position.addScaledVector(right, speed);
+    if (keys.current["d"]) obj.position.addScaledVector(right, -speed);
+
+    // Camera follow player
+    camera.position.copy(obj.position);
+  });
+
+  return <mesh ref={playerRef} position={[0, 0, 0]} visible={false} />;
+}
+
+function PaintingWorld({ photo, onExit }) {
+  const texture = useLoader(THREE.TextureLoader, photo.url);
+
+  return (
+    <Canvas camera={{ position: [0, 0, 0], fov: 75 }}>
+      <ambientLight intensity={0.8} />
+      <PointerLockControls />
+
+      <PaintingPlayer onExit={onExit} />
+
+      {/* Sphere 360° */}
+      <mesh scale={[-1, 1, 1]}>
+        <sphereGeometry args={[500, 64, 64]} />
+        <meshBasicMaterial map={texture} side={THREE.BackSide} />
+      </mesh>
+    </Canvas>
+  );
+}
+
+
+
+/* ---------- Gallery chính ---------- */
+export default function MultiRoomGallery() {
+  const [rooms, setRooms] = useState([]);
+  const [playerPos, setPlayerPos] = useState(new THREE.Vector3());
+  const [showPhotoHint, setShowPhotoHint] = useState(false);
+  const [insidePainting, setInsidePainting] = useState(false);
+  const [currentPainting, setCurrentPainting] = useState(null);
+
+  const nearPhotoRef = useRef(null);
   const roomWidth = 20;
   const wallSpacing = 4;
 
+  const sampleImages = ["https://threejs.org/examples/textures/2294472375_24a3b8ef46_o.jpg", "/images/image02.jpg", "images/image03.jpg"];
+
   useEffect(() => {
-    const data = Array.from({ length: 16 }, (_, i) => ({
-      id: i + 1,
-      url: `https://res.cloudinary.com/dzvxim3zn/image/upload/v1753147038/ChatGPT_Image_07_56_52_22_thg_7_2025_n2qkuv.png`,
-      caption: `CEO LÊ MINH HOÀNG`,
-    }));
-    setPhotos(data);
+    setRooms([{ photos: sampleImages.map((url, i) => ({ id: i + 1, url })) }]);
   }, []);
 
   useEffect(() => {
-    const handleClose = (e) => {
-      if (e.key.toLowerCase() === "f") {
-        setSelectedPhoto(null);
+    if (!rooms.length) return;
+    const photos = rooms[0].photos;
+    let nearest = null;
+
+    photos.forEach((photo, i) => {
+      const wallIndex = Math.floor(i / 2);
+      const indexInWall = i % 2;
+      const offset = -((2 - 1) * wallSpacing) / 2 + indexInWall * wallSpacing;
+
+      let pos;
+      switch (wallIndex % 4) {
+        case 0: pos = new THREE.Vector3(offset, 2.5, -roomWidth / 2 + 0.1); break;
+        case 1: pos = new THREE.Vector3(roomWidth / 2 - 0.1, 2.5, offset); break;
+        case 2: pos = new THREE.Vector3(-offset, 2.5, roomWidth / 2 - 0.1); break;
+        case 3: pos = new THREE.Vector3(-roomWidth / 2 + 0.1, 2.5, -offset); break;
+        default: return;
+      }
+
+      const dist = new THREE.Vector2(playerPos.x, playerPos.z).distanceTo(new THREE.Vector2(pos.x, pos.z));
+      if (dist < 2) nearest = photo;
+    });
+
+    nearPhotoRef.current = nearest;
+    setShowPhotoHint(!!nearest);
+  }, [playerPos, rooms]);
+
+  useEffect(() => {
+    const handleEnterPainting = (e) => {
+      if (e.key.toLowerCase() === "g" && nearPhotoRef.current) {
+        setCurrentPainting(nearPhotoRef.current);
+        setInsidePainting(true);
       }
     };
-    window.addEventListener("keydown", handleClose);
-    return () => window.removeEventListener("keydown", handleClose);
+    window.addEventListener("keydown", handleEnterPainting);
+    return () => window.removeEventListener("keydown", handleEnterPainting);
   }, []);
 
-  const wallPositions = [];
-  photos.forEach((photo, index) => {
-    const wallIndex = Math.floor(index / 4);
-    const indexInWall = index % 4;
-    const offset = -((4 - 1) * wallSpacing) / 2 + indexInWall * wallSpacing;
+  if (insidePainting && currentPainting) {
+    return <PaintingWorld photo={currentPainting} onExit={() => setInsidePainting(false)} />;
+  }
+
+  if (!rooms.length) return null;
+  const photos = rooms[0].photos;
+
+  // Tính vị trí treo tranh
+  const wallPositions = photos.map((photo, index) => {
+    const wallIndex = Math.floor(index / 2);
+    const indexInWall = index % 2;
+    const offset = -((2 - 1) * wallSpacing) / 2 + indexInWall * wallSpacing;
 
     switch (wallIndex % 4) {
-      case 0:
-        wallPositions.push({ photo, position: [offset, 2.5, -roomWidth / 2 + 0.1], rotation: [0, 0, 0] });
-        break;
-      case 1:
-        wallPositions.push({ photo, position: [roomWidth / 2 - 0.1, 2.5, offset], rotation: [0, -Math.PI / 2, 0] });
-        break;
-      case 2:
-        wallPositions.push({ photo, position: [-offset, 2.5, roomWidth / 2 - 0.1], rotation: [0, Math.PI, 0] });
-        break;
-      case 3:
-        wallPositions.push({ photo, position: [-roomWidth / 2 + 0.1, 2.5, -offset], rotation: [0, Math.PI / 2, 0] });
-        break;
-      default:
-        break;
+      case 0: return { photo, position: [offset, 2.5, -roomWidth / 2 + 0.1], rotation: [0, 0, 0] };
+      case 1: return { photo, position: [roomWidth / 2 - 0.1, 2.5, offset], rotation: [0, -Math.PI / 2, 0] };
+      case 2: return { photo, position: [-offset, 2.5, roomWidth / 2 - 0.1], rotation: [0, Math.PI, 0] };
+      case 3: return { photo, position: [-roomWidth / 2 + 0.1, 2.5, -offset], rotation: [0, Math.PI / 2, 0] };
+      default: return null;
     }
   });
 
@@ -150,51 +260,33 @@ export default function GalleryFPS() {
         <Sky sunPosition={[100, 20, 100]} />
 
         <Room width={roomWidth} />
-        <Player />
+        <Player onPositionUpdate={setPlayerPos} resetSignal={0} roomWidth={roomWidth} />
 
         {wallPositions.map((wp) => (
-          <WallPhoto key={wp.photo.id} {...wp} onClick={setSelectedPhoto} />
+          <WallPhoto key={wp.photo.id} {...wp} />
         ))}
 
         <PointerLockControls />
       </Canvas>
 
-      {selectedPhoto && (
+      {showPhotoHint && (
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-            animation: "fadeIn 0.5s ease-in-out",
+            bottom: "40%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            color: "yellow",
+            fontSize: "28px",
+            background: "rgba(0,0,0,0.5)",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            zIndex: 1000,
           }}
         >
-          <img
-            src={selectedPhoto.url}
-            alt="memory"
-            style={{ maxHeight: "60%", marginBottom: "20px" }}
-          />
-          <p style={{ fontSize: "24px" }}>{selectedPhoto.caption}</p>
-          <small>(Nhấn F để đóng)</small>
+          Nhấn G để đi vào bức tranh
         </div>
       )}
-
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-        `}
-      </style>
     </>
   );
 }
